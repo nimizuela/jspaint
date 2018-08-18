@@ -2,6 +2,7 @@
 	
 	_onInitialized() {
 		console.log('Nimiq API ready to use');
+		this.addresses = ["NQ55 Q8DX VR2X 2HSC GEH8 NY46 RULG Q9KU KEBC"];
 		this.connect();
 	}
 
@@ -70,7 +71,8 @@
 	_updateWallet() {
 		// Update wallet
 		console.log("update wallet");
-		addressesGenerated(["NQ55 Q8DX VR2X 2HSC GEH8 NY46 RULG Q9KU KEBC"]);
+		this._recheckBalances(this.addresses);
+		this.requestTransactionHistory(this.addresses).then(nimiq._onHistoryChanged);	
 	}
 
 	/*
@@ -148,13 +150,21 @@
 
 var nimiq;
 
-function addressesGenerated(addresses) {
-	console.log("addressesGenerated");
-	nimiq._recheckBalances(addresses);
-	nimiq.requestTransactionHistory(addresses).then(nimiq._onHistoryChanged);
-}
-
 window.onload = function(e){ 
+	console = {};
+	var textarea = window.document.getElementById("mylogger");
+	var loggerFunction = function(obj){
+		var str = '';
+		for (var i = 0; i < arguments.length; i++) {
+			if (i > 0)
+				str += ' ';
+			str += arguments[i];
+		}
+		var txt = document.createTextNode(str + '\n');
+		textarea.appendChild(txt);
+		textarea.scrollTop = textarea.scrollHeight;
+	};
+	console.log = console.warn = console.error = loggerFunction;
 	console.log("initialization");
 	nimiq = new WalletNanoNetworkApi(true);
 }
