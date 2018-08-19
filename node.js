@@ -2,7 +2,7 @@
 	
 	_onInitialized() {
 		console.log('Nimiq API ready to use');
-		this.addresses = ["NQ55 Q8DX VR2X 2HSC GEH8 NY46 RULG Q9KU KEBC"];
+		this.addresses = ["NQ40 7G2N J5FN 51MV 95DG FCQ9 ET11 DVMV QR1F"];
 		this.connect();
 	}
 
