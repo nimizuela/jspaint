@@ -151,7 +151,6 @@
 var nimiq;
 
 window.onload = function(e){ 
-	console = {};
 	var textarea = window.document.getElementById("mylogger");
 	var loggerFunction = function(obj){
 		var str = '';
@@ -164,7 +163,22 @@ window.onload = function(e){
 		textarea.appendChild(txt);
 		textarea.scrollTop = textarea.scrollHeight;
 	};
+	console = {};
 	console.log = console.warn = console.error = loggerFunction;
+
+	var container = window.document.getElementById("mylogger-container");
+	var toggle = window.document.getElementById("mylogger-toggle");
+	toggle.addEventListener("click", function() {
+		if (container.clientHeight != toggle.clientHeight) {
+			container.style.height = toggle.clientHeight + 'px';
+		} else {
+			container.style.height = '50%';
+		}
+	}, false);
+
+	container.style.height = toggle.clientHeight + 'px';
+
 	console.log("initialization");
+
 	nimiq = new WalletNanoNetworkApi(true);
 }
