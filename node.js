@@ -2,7 +2,7 @@
 	
 	_onInitialized() {
 		console.log('Nimiq API ready to use');
-		this.addresses = ["NQ40 7G2N J5FN 51MV 95DG FCQ9 ET11 DVMV QR1F"];
+		this.addresses = ["NQ55 Q8DX VR2X 2HSC GEH8 NY46 RULG Q9KU KEBC"];
 		this.connect();
 	}
 
@@ -29,7 +29,11 @@
 	}
 
 	_onHistoryChanged(history) {
-		console.log('new history: ' + history);
+		console.log('new history:');
+		var self = this;
+		var newTransactions = history.newTransactions;
+		var receivedTransactions = newTransactions.filter(tx => self.addresses.indexOf(tx.recipient) > -1 && /^[a-zA-Z\d]{7}$/.test(tx.extraData));
+		console.log(JSON.stringify(receivedTransactions, null, 2));
 	}
 
 	_onTransactionPending(sender, recipient, value, fee, extraData, hash, validityStartHeight) {
@@ -72,7 +76,7 @@
 		// Update wallet
 		console.log("update wallet");
 		this._recheckBalances(this.addresses);
-		this.requestTransactionHistory(this.addresses).then(nimiq._onHistoryChanged);	
+		this.requestTransactionHistory(this.addresses).then(this._onHistoryChanged.bind(this));
 	}
 
 	/*
