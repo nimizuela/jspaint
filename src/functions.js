@@ -729,6 +729,7 @@ function select_tool(tool){
 // transparency = has_any_transparency(ctx);
 function detect_transparency(){
 	transparency = false;
+	opaque_pixels = 0;
 
 	// @TODO Optimization: Assume JPEGs and some other file types are opaque.
 	// Raster file formats that SUPPORT transparency include GIF, PNG, BMP and TIFF
@@ -736,9 +737,11 @@ function detect_transparency(){
 
 	var id = ctx.getImageData(0, 0, canvas.width, canvas.height);
 	for(var i=0, l=id.data.length; i<l; i+=4){
+		if(id.data[i+3] > 0){
+			opaque_pixels++;
+		}
 		if(id.data[i+3] < 255){
 			transparency = true;
-			return;
 		}
 	}
 }

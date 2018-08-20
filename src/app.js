@@ -2,6 +2,7 @@
 var aliasing = true;
 var transparency = false;
 var monochrome = false;
+var opaque_pixels = 0;
 
 var magnification = 1;
 
