@@ -181,9 +181,14 @@ var menus = {
 			description: "Copies the selection to a file.",
 		},
 		{
-			item: "Paste &From...",
+			item: "Paste &From File...",
 			action: paste_from_file_select_dialog,
 			description: "Pastes a file into the selection.",
+		},
+		{
+			item: "Paste From URL",
+			action: paste_from_url,
+			description: "Pastes an image from the web into the selection.",
 		}
 	],
 	"&View": [

@@ -395,6 +395,42 @@ function paste_from_file_select_dialog(){
 	});
 }
 
+function paste_from_URI(uri){
+	var blob_url = new URL(uri);
+	load_image_from_URI(blob_url, function(err, img){
+		if(err){ return show_resource_load_error_message(); }
+		paste(img);
+		console.log("revokeObjectURL", blob_url);
+		URL.revokeObjectURL(blob_url);
+	});
+}
+
+var $paste_from_url_window;
+function paste_from_url(){
+	if($paste_from_url_window){
+		$paste_from_url_window.close();
+	}
+	var $w = new $FormWindow().addClass("dialogue-window");
+	$paste_from_url_window = $w;
+	$w.title("Paste from URL");
+	// TODO: URL validation (input has to be in a form (and we don't want the form to submit))
+	$w.$main.html("<label>URL: <input type='url' required value='' class='url-input'/></label>");
+	var $input = $w.$main.find(".url-input");
+	$w.$Button("Paste", function(){
+		$w.close();
+		// TODO: retry loading if same URL entered
+		// actually, make it change the hash only after loading successfully
+		// (but still load from the hash when necessary)
+		// make sure it doesn't overwrite the old session before switching
+		paste_from_URI($input.val());
+	}).focus();
+	$w.$Button("Cancel", function(){
+		$w.close();
+	});
+	$w.center();
+	$input.focus();
+}
+
 function paste(img){
 
 	if(img.width > canvas.width || img.height > canvas.height){
