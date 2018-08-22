@@ -63,39 +63,35 @@
 						var imageH = response.data.height;
 						var imageSize = response.data.size;
 						var imageURL = response.data.link;
-
-						var imageData = {
-							"x": imageX,
-							"y": imageY,
-							"width": imageW,
-							"height": imageH,
-							"size": imageSize,
-							"url": imageURL,
-							"id": imageID
-						};
+						var blob_url = new URL(imageURL);
 						
-						var blob_url = new URL(imageData.url);
 						load_image_from_URI(blob_url, function(err, img){
 							if(err){ return show_resource_load_error_message(); }
-							paste_at_position(img, imageData.x, imageData.y);
-							deselect();
-							URL.revokeObjectURL(blob_url);
+
+							var imageData = {
+								"x": imageX,
+								"y": imageY,
+								"width": imageW,
+								"height": imageH,
+								"size": imageSize,
+								"url": imageURL,
+								"id": imageID,
+								"blob_url": blob_url,
+								"img": img
+							};
+
+							console.log('store ' + index + ': ' + imageData.url);
+							images[index] = imageData;
+	
+							while(!!images[currentImage]) {
+								console.log('try to paste ' + currentImage + ': ' + images[currentImage].url);
+								paste_at_position(images[currentImage].img, images[currentImage].x, images[currentImage].y);
+								deselect();
+								URL.revokeObjectURL(images[currentImage].blob_url);
+								currentImage++;
+							}								
 						});
 /*
-						if (index == currentImage) {
-							console.log('try paste: ' + imageData.url);
-
-							paste_from_URI(imageData.url);
-							while(!!images[++currentImage]) {
-								console.log('try paste: ' + images[currentImage].url);
-								paste_from_URI(images[currentImage].url);
-								images[currentImage] = null;
-							}
-							
-						} else {
-							console.log('store: ' + imageData.url);
-							images[index] = imageData;
-						}
 */
 					}
 				});
