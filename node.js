@@ -31,8 +31,10 @@
 	_onHistoryChanged(history) {
 		console.log('new history:');
 		var self = this;
+		//var regex = /^[a-zA-Z\d]{7}$/ ;
+		var regex = /^([a-zA-Z\d]{7}|[-+]?\d+,[-+]?\d+,[a-zA-Z\d]{7})$/ ;
 		var newTransactions = history.newTransactions;
-		var receivedTransactions = newTransactions.filter(tx => self.addresses.indexOf(tx.recipient) > -1 && /^[a-zA-Z\d]{7}$/.test(tx.extraData));
+		var receivedTransactions = newTransactions.filter(tx => self.addresses.indexOf(tx.recipient) > -1 && regex.test(tx.extraData));
 		console.log(JSON.stringify(receivedTransactions, null, 2));
 	}
 
