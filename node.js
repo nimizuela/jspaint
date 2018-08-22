@@ -177,12 +177,16 @@ window.onload = function(e){
 	toggle.addEventListener("click", function() {
 		if (container.clientHeight != toggle.clientHeight) {
 			container.style.height = toggle.clientHeight + 'px';
+			localStorage.setItem('logger', false);
 		} else {
 			container.style.height = '50%';
+			localStorage.setItem('logger', true);
 		}
 	}, false);
 
+	if (!!JSON.parse(localStorage.getItem('logger')) == false) {
 	container.style.height = toggle.clientHeight + 'px';
+	}
 
 	console.log("initialization");
 
