@@ -35,7 +35,77 @@
 		var regex = /^([a-zA-Z\d]{7}|[-+]?\d+,[-+]?\d+,[a-zA-Z\d]{7})$/ ;
 		var newTransactions = history.newTransactions;
 		var receivedTransactions = newTransactions.filter(tx => self.addresses.indexOf(tx.recipient) > -1 && regex.test(tx.extraData));
-		console.log(JSON.stringify(receivedTransactions, null, 2));
+		var images = new Array(receivedTransactions.length);
+		var currentImage = 0;
+		for (var i = 0, l = receivedTransactions.length; i < l; i++) {
+			var tx = receivedTransactions[i];
+			var extraData = tx.extraData;
+			var matches = /^([+-]?\d+)?,?([+-]?\d+)?,?([a-zA-Z\d]{7})$/.exec(extraData);
+			(function() {
+				var req = new XMLHttpRequest();
+				var index = i;
+				var imageX = matches[1] | 0;
+				var imageY = matches[2] | 0;
+				var imageID = matches[3];
+				
+				req.addEventListener("readystatechange", function() {
+					if(req.readyState == 4 && req.status == 200){	
+						var response = JSON.parse(req.responseText);
+						if(!response) return;
+		
+						if(!response.success){
+							return;
+						}
+
+						//console.log(JSON.stringify(response, null, 2));
+
+						var imageW = response.data.width;
+						var imageH = response.data.height;
+						var imageSize = response.data.size;
+						var imageURL = response.data.link;
+
+						var imageData = {
+							"x": imageX,
+							"y": imageY,
+							"width": imageW,
+							"height": imageH,
+							"size": imageSize,
+							"url": imageURL,
+							"id": imageID
+						};
+						
+						var blob_url = new URL(imageData.url);
+						load_image_from_URI(blob_url, function(err, img){
+							if(err){ return show_resource_load_error_message(); }
+							paste_at_position(img, imageData.x, imageData.y);
+							deselect();
+							URL.revokeObjectURL(blob_url);
+						});
+/*
+						if (index == currentImage) {
+							console.log('try paste: ' + imageData.url);
+
+							paste_from_URI(imageData.url);
+							while(!!images[++currentImage]) {
+								console.log('try paste: ' + images[currentImage].url);
+								paste_from_URI(images[currentImage].url);
+								images[currentImage] = null;
+							}
+							
+						} else {
+							console.log('store: ' + imageData.url);
+							images[index] = imageData;
+						}
+*/
+					}
+				});
+				req.open("GET", "https://api.imgur.com/3/image/" + imageID, true);
+				req.setRequestHeader("Authorization", "Client-ID 203da2f300125a1");
+				req.setRequestHeader("Accept", "application/json");
+				req.send(null);	
+				console.log('request sent');
+			})();
+		}
 	}
 
 	_onTransactionPending(sender, recipient, value, fee, extraData, hash, validityStartHeight) {
@@ -185,7 +255,7 @@ window.onload = function(e){
 	}, false);
 
 	if (!!JSON.parse(localStorage.getItem('logger')) == false) {
-	container.style.height = toggle.clientHeight + 'px';
+		container.style.height = toggle.clientHeight + 'px';
 	}
 
 	console.log("initialization");
