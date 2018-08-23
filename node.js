@@ -222,7 +222,8 @@
 
 var nimiq;
 
-window.onload = function(e){ 
+window.onload = function(e){
+	var autoScroll = true;
 	var textarea = window.document.getElementById("mylogger");
 	var loggerFunction = function(obj){
 		var str = '';
@@ -233,10 +234,20 @@ window.onload = function(e){
 		}
 		var txt = document.createTextNode(str + '\n');
 		textarea.appendChild(txt);
-		textarea.scrollTop = textarea.scrollHeight;
+		if (autoScroll) {
+			textarea.scrollTop = textarea.scrollHeight;
+		}
 	};
 	console = {};
 	console.log = console.warn = console.error = loggerFunction;
+
+	textarea.addEventListener("scroll", function() {
+		if ((textarea.scrollTop + textarea.offsetHeight) > textarea.scrollHeight) {
+			autoScroll = true;
+		} else {
+			autoScroll = false;
+		}
+	});
 
 	var container = window.document.getElementById("mylogger-container");
 	var toggle = window.document.getElementById("mylogger-toggle");
