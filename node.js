@@ -32,7 +32,7 @@
 		console.log('new history:');
 		var self = this;
 		//var regex = /^[a-zA-Z\d]{7}$/ ;
-		var regex = /^([a-zA-Z\d]{7}|[-+]?\d+,[-+]?\d+,[a-zA-Z\d]{7})$/ ;
+		var regex = /^([a-zA-Z\d]{7}|[-+]?\d+,[-+]?\d+,[a-zA-Z\d]{7}(\.[a-zA-Z\d-_\.]+)?)$/;
 		var newTransactions = history.newTransactions;
 		var receivedTransactions = newTransactions.filter(tx => self.addresses.indexOf(tx.recipient) > -1 && regex.test(tx.extraData));
 		var images = new Array(receivedTransactions.length);
@@ -40,7 +40,7 @@
 		for (var i = 0, l = receivedTransactions.length; i < l; i++) {
 			var tx = receivedTransactions[i];
 			var extraData = tx.extraData;
-			var matches = /^([+-]?\d+)?,?([+-]?\d+)?,?([a-zA-Z\d]{7})$/.exec(extraData);
+			var matches = /^([+-]?\d+)?,?([+-]?\d+)?,?([a-zA-Z\d]{7})(\.[a-zA-Z\d-_\.]+)?$/.exec(extraData);
 			(function() {
 				var req = new XMLHttpRequest();
 				var index = i;
