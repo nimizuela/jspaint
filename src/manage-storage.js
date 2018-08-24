@@ -83,3 +83,16 @@ function manage_storage(){
 	$storage_manager.width(450);
 	$storage_manager.center();
 }
+
+function clear_chages(){
+	localStorage.setItem('changes', canvas.toDataURL());
+}
+
+function get_chages(){
+	var dataURL = localStorage.getItem('changes');
+	var img = new Image();
+	img.src = dataURL;
+	img.onload = function (){
+		ctx.drawImage(img, 10, 10);
+	};
+}

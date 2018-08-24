@@ -90,7 +90,11 @@
 								URL.revokeObjectURL(images[currentImage].blob_url);
 								images[currentImage] = null;
 								currentImage++;
-							}								
+							}
+
+							if (currentImage == images.length) {
+								clear_chages();
+							}
 						});
 					}
 				});

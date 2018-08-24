@@ -53,6 +53,16 @@ var menus = {
 			action: manage_storage,
 			description: "Manages storage of previously created or opened pictures.",
 		},
+		{
+			item: "Clear Changes",
+			action: clear_chages,
+			description: "Set the current image as base to compare when obtaining the latest changes.",
+		},
+		{
+			item: "Get Changes",
+			action: get_chages,
+			description: "Get the changes on the current image since the last call to Clear Changes.",
+		},
 		$MenuBar.DIVIDER,
 		{
 			item: "Print Pre&view",
