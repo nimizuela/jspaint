@@ -125,6 +125,7 @@ function get_chages(){
 			var cid = ctx.getImageData(l, t, w, h);
 			var dc = new Canvas(w, h);
 			var did = dc.ctx.getImageData(0, 0, w, h);
+			var pixels_count = 0;
 			for(var i=0; i<did.data.length; i+=4){
 				if (
 					cid.data[i+0] != sid.data[i+0] ||
@@ -136,6 +137,7 @@ function get_chages(){
 					did.data[i+1] = cid.data[i+1];
 					did.data[i+2] = cid.data[i+2];
 					did.data[i+3] = cid.data[i+3];
+					pixels_count++;
 				}
 			}
 			dc.ctx.putImageData(did, 0, 0);

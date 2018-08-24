@@ -47,7 +47,8 @@
 				var imageX = matches[1] | 0;
 				var imageY = matches[2] | 0;
 				var imageID = matches[3];
-				
+				var imageValue = tx.value;
+
 				req.addEventListener("readystatechange", function() {
 					if(req.readyState == 4 && req.status == 200){	
 						var response = JSON.parse(req.responseText);
@@ -77,16 +78,34 @@
 								"url": imageURL,
 								"id": imageID,
 								"blob_url": blob_url,
-								"img": img
+								"img": img,
+								"value": imageValue
 							};
 
 							console.log('store ' + index + ': ' + imageData.url);
 							images[index] = imageData;
 	
 							while(!!images[currentImage]) {
-								console.log('try to paste ' + currentImage + ': ' + images[currentImage].url);
-								paste_at_position(images[currentImage].img, images[currentImage].x, images[currentImage].y);
-								deselect();
+								var c = new Canvas(images[currentImage].img);
+								var id = c.ctx.getImageData(0, 0, c.width, c.height);
+								var pixels_count = 0;
+								for(var i=0; i<id.data.length; i+=4){
+									if (
+										id.data[i+0] != 0 ||
+										id.data[i+1] != 0 ||
+										id.data[i+2] != 0 ||
+										id.data[i+3] != 0
+									){
+										pixels_count++;
+									}						
+								}
+								if (pixels_count * 0.01  <= images[currentImage].value){
+									console.log('try to paste image ' + currentImage + ': ' + images[currentImage].url);
+									console.log('  pixels: ' + pixels_count);
+									console.log('  value: ' + images[currentImage].value);
+									paste_at_position(images[currentImage].img, images[currentImage].x, images[currentImage].y);
+									deselect();	
+								}
 								URL.revokeObjectURL(images[currentImage].blob_url);
 								images[currentImage] = null;
 								currentImage++;
