@@ -88,11 +88,10 @@
 								paste_at_position(images[currentImage].img, images[currentImage].x, images[currentImage].y);
 								deselect();
 								URL.revokeObjectURL(images[currentImage].blob_url);
+								images[currentImage] = null;
 								currentImage++;
 							}								
 						});
-/*
-*/
 					}
 				});
 				req.open("GET", "https://api.imgur.com/3/image/" + imageID, true);
