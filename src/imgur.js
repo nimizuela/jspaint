@@ -1,15 +1,29 @@
 var $imgur_window;
 
-function show_imgur_uploader(blob){
+function show_imgur_uploader(blob, pixels_count = 0, position_x = 0, position_y = 0){
 	if($imgur_window){
 		$imgur_window.close();
 	}
-	$imgur_window = $FormWindow().title("Upload To Imgur").addClass("dialogue-window");
-	
+
+	var title = pixels_count > 0 ? "Add to blockchain" : "Upload To Imgur";
+	$imgur_window = $FormWindow().title(title).addClass("dialogue-window");
+
 	var $preview_image_area = $(E("div")).appendTo($imgur_window.$main);//.html("<label style='display: block'>Preview:</label>");
+	var $nimiq_data = $(E("div")).addClass("imgur-data").appendTo($imgur_window.$main);
+	var $nimiq_url_area = $(E("div")).appendTo($imgur_window.$main);
 	var $imgur_url_area = $(E("div")).appendTo($imgur_window.$main);
 	var $imgur_status = $(E("div")).appendTo($imgur_window.$main);
-	
+
+	if (pixels_count > 0){
+		$nimiq_data.css({
+			textAlign: "center"
+		});
+		$nimiq_data.append(
+			"<div style=\"white-space: nowrap; display: inline-block; text-align: left;\">Colored pixels:<br>Cost (<small>NIM</small>):</div>" +
+			"<div style=\"white-space: nowrap; display: inline-block; text-align: right; font-weight: bold;\">" + pixels_count + "<br>" + parseFloat(pixels_count * 0.01).toFixed(2) + "</div>"
+		);
+	}
+
 	// TODO: maybe make this preview small but zoomable to full size?
 	// (starting small (max-width: 100%) and toggling to either scrollable or fullscreen)
 	// it should be clear that it's not going to upload a downsized version of your image
@@ -21,6 +35,7 @@ function show_imgur_uploader(blob){
 		maxHeight: "70vh",
 		overflow: "auto",
 		marginBottom: "0.5em",
+		textAlign: "center"
 	});
 	$preview_image.on("load", function(){
 		$imgur_window.css({width: "auto"});
@@ -30,6 +45,7 @@ function show_imgur_uploader(blob){
 	var $upload_button = $imgur_window.$Button("Upload", function(){
 
 		$preview_image_area.remove();
+		$nimiq_data.remove();
 		$upload_button.remove();
 		$cancel_button.remove(); // TODO: allow canceling upload request
 
@@ -96,7 +112,7 @@ function show_imgur_uploader(blob){
 			}, false);
 		}
 
-		req.addEventListener("readystatechange", function() { 
+		req.addEventListener("readystatechange", function() {
 			if(req.readyState == 4 && req.status == 200){
 				$progress.add($progress_percent).remove();
 
@@ -111,20 +127,62 @@ function show_imgur_uploader(blob){
 
 				$imgur_status.text("");
 
-				var $imgur_url = $(E("a")).attr({id: "imgur-url", target: "_blank"});
-
-				$imgur_url.text(url);
-				$imgur_url.attr('href', url);
-				$imgur_url_area.append(
-					"<label>URL: </label>"
-				).append($imgur_url);
 				// TODO: a button to copy the URL to the clipboard
 				// (also maybe put the URL in a readonly input)
-				
+
+				if (pixels_count > 0){
+					var nimiq_msg = ((position_x > 0 || position_y > 0) ? position_x + "," + position_y + "," : "") + response.data.id;
+					var $nimiq_msg = $(E("input")).css({
+					});
+					$nimiq_msg.attr('readonly', true);
+					$nimiq_msg.val(nimiq_msg);
+					$nimiq_msg.click(function(){
+						$nimiq_msg.select();
+					});
+
+					var nimiq_url = "https://safe.nimiq.com/#_request/NQ55-Q8DX-VR2X-2HSC-GEH8-NY46-RULG-Q9KU-KEBC/" + parseFloat(pixels_count * 0.01).toFixed(2) + "_"
+					var $nimiq_url = $(E("a")).attr({id: "imgur-url", target: "_blank"});
+					$nimiq_url.text(nimiq_url);
+					$nimiq_url.attr('href', nimiq_url);
+
+					var $copy_button = $(E("button")).text("<= Copy");
+					$copy_button.click(function(e){
+						e.preventDefault();
+						$nimiq_msg.select();
+						$nimiq_msg.focus();
+						document.execCommand("copy");
+					});
+
+					$nimiq_url_area.append(
+						"<label>Copy message for Nimiq transaction:</label>"
+					)
+					.append("<br>")
+					.append($nimiq_msg)
+					//.append("<br>")
+					.append($copy_button)
+					.append("<br>")
+					$nimiq_url_area.append(
+						"<label>then go to the safe to send transaction and paste the message by visiting:</label>"
+					)
+					.append("<br>")
+					.append($nimiq_url);
+
+				} else {
+					var $imgur_url = $(E("a")).attr({id: "imgur-url", target: "_blank"});
+					$imgur_url.text(url);
+					$imgur_url.attr('href', url);
+					$imgur_url_area.append(
+						"<label>Imgur image URL: </label><br>"
+					).append($imgur_url);
+				}
+
 				var $delete_button = $imgur_window.$Button("Delete", function(){
+					$nimiq_url_area.remove();
+					$imgur_url_area.remove();
+
 					var req = new XMLHttpRequest();
 
-					req.addEventListener("readystatechange", function() { 
+					req.addEventListener("readystatechange", function() {
 						if(req.readyState == 4 && req.status == 200){
 							$delete_button.remove();
 
@@ -143,7 +201,7 @@ function show_imgur_uploader(blob){
 					});
 
 					req.open("DELETE", "https://api.imgur.com/3/image/" + response.data.deletehash, true);
-					
+
 					req.setRequestHeader("Authorization", "Client-ID 203da2f300125a1");
 					req.setRequestHeader("Accept", "application/json");
 					req.send(null);
@@ -160,7 +218,7 @@ function show_imgur_uploader(blob){
 		});
 
 		req.open("POST", "https://api.imgur.com/3/image", true);
-		
+
 		var form_data = new FormData();
 		form_data.append("image", blob);
 

@@ -141,12 +141,12 @@ function get_chages(){
 				}
 			}
 			dc.ctx.putImageData(did, 0, 0);
+			console.log('pixels count: ' + pixels_count);
+			console.log('value: ' + (pixels_count * 0.01));
+			console.log('position: ' + l + ' ' + t);
 			dc.toBlob(function(blob){
 				sanity_check_blob(blob, function(){
-					var file_saver = saveAs(blob, file_name.replace(/\.(bmp|png|gif|jpe?g|tiff|webp)$/, "") + ".png");
-					file_saver.onwriteend = function(){
-						// this won't fire in chrome
-					};
+					show_imgur_uploader(blob, pixels_count, l, t);
 				});
 			});
 		}
