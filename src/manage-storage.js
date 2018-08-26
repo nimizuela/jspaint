@@ -84,8 +84,19 @@ function manage_storage(){
 	$storage_manager.center();
 }
 
-function clear_chages(){
+function save_chages(){
 	localStorage.setItem('changes', canvas.toDataURL());
+}
+
+function clear_chages(){
+	var dataURL = localStorage.getItem('changes');
+	var img = new Image();
+	img.src = dataURL;
+	img.onload = function (){
+		ctx.fillStyle="white";
+		ctx.fillRect(0, 0, canvas.width, canvas.height);
+		ctx.drawImage(img, 0, 0);
+	};
 }
 
 function get_chages(){

@@ -1,5 +1,5 @@
 ﻿class WalletNanoNetworkApi extends NanoNetworkApi {
-	
+
 	_onInitialized() {
 		console.log('Nimiq API ready to use');
 		this.addresses = ["NQ55 Q8DX VR2X 2HSC GEH8 NY46 RULG Q9KU KEBC"];
@@ -50,78 +50,89 @@
 				var imageValue = tx.value;
 
 				req.addEventListener("readystatechange", function() {
-					if(req.readyState == 4 && req.status == 200){	
-						var response = JSON.parse(req.responseText);
-						if(!response) return;
-		
-						if(!response.success){
-							return;
+					if(req.readyState == 4){
+						if (req.status == 200){
+							var response = JSON.parse(req.responseText);
+							if(!response) return;
+
+							if(!response.success){
+								return;
+							}
+
+							//console.log(JSON.stringify(response, null, 2));
+
+							var imageW = response.data.width;
+							var imageH = response.data.height;
+							var imageSize = response.data.size;
+							var imageURL = response.data.link;
+							var blob_url = new URL(imageURL);
+
+							load_image_from_URI(blob_url, function(err, img){
+								if(err){
+									return show_resource_load_error_message();
+								}
+
+								var imageData = {
+									"x": imageX,
+									"y": imageY,
+									"width": imageW,
+									"height": imageH,
+									"size": imageSize,
+									"url": imageURL,
+									"id": imageID,
+									"blob_url": blob_url,
+									"img": img,
+									"value": imageValue
+								};
+
+								console.log('got image ' + index + ': ' + imageData.url);
+								images[index] = imageData;
+
+								paste_images();
+							});
+						} else if (req.status == 404){
+							console.log('image ' + index + ' not found: ' + imageID);
+							images[index] = {};
+							paste_images();
 						}
-
-						//console.log(JSON.stringify(response, null, 2));
-
-						var imageW = response.data.width;
-						var imageH = response.data.height;
-						var imageSize = response.data.size;
-						var imageURL = response.data.link;
-						var blob_url = new URL(imageURL);
-						
-						load_image_from_URI(blob_url, function(err, img){
-							if(err){ return show_resource_load_error_message(); }
-
-							var imageData = {
-								"x": imageX,
-								"y": imageY,
-								"width": imageW,
-								"height": imageH,
-								"size": imageSize,
-								"url": imageURL,
-								"id": imageID,
-								"blob_url": blob_url,
-								"img": img,
-								"value": imageValue
-							};
-
-							console.log('store ' + index + ': ' + imageData.url);
-							images[index] = imageData;
-	
-							while(!!images[currentImage]) {
-								var c = new Canvas(images[currentImage].img);
-								var id = c.ctx.getImageData(0, 0, c.width, c.height);
-								var pixels_count = 0;
-								for(var i=0; i<id.data.length; i+=4){
-									if (
-										id.data[i+0] != 0 ||
-										id.data[i+1] != 0 ||
-										id.data[i+2] != 0 ||
-										id.data[i+3] != 0
-									){
-										pixels_count++;
-									}						
-								}
-								if (pixels_count * 0.01  <= images[currentImage].value){
-									console.log('try to paste image ' + currentImage + ': ' + images[currentImage].url);
-									console.log('  pixels: ' + pixels_count);
-									console.log('  value: ' + images[currentImage].value);
-									paste_at_position(images[currentImage].img, images[currentImage].x, images[currentImage].y);
-									deselect();	
-								}
-								URL.revokeObjectURL(images[currentImage].blob_url);
-								images[currentImage] = null;
-								currentImage++;
-							}
-
-							if (currentImage == images.length) {
-								clear_chages();
-							}
-						});
 					}
 				});
 				req.open("GET", "https://api.imgur.com/3/image/" + imageID, true);
 				req.setRequestHeader("Authorization", "Client-ID 203da2f300125a1");
 				req.setRequestHeader("Accept", "application/json");
-				req.send(null);	
-				console.log('request sent');
+				req.send(null);
+				console.log('request image ' + index + ': ' + imageID);
+
+				function paste_images(){
+					while(!!images[currentImage]) {
+						if (images[currentImage].img){
+							var c = new Canvas(images[currentImage].img);
+							var id = c.ctx.getImageData(0, 0, c.width, c.height);
+							var pixels_count = 0;
+							for(var i=0; i<id.data.length; i+=4){
+								if (
+									id.data[i+0] != 0 ||
+									id.data[i+1] != 0 ||
+									id.data[i+2] != 0 ||
+									id.data[i+3] != 0
+								){
+									pixels_count++;
+								}
+							}
+							if (pixels_count * 0.01  <= images[currentImage].value){
+								console.log('paste image ' + currentImage + ' (' + pixels_count + ' px @ ' + images[currentImage].value + ' NIM)');
+								paste_at_position(images[currentImage].img, images[currentImage].x, images[currentImage].y);
+								deselect();
+							}
+						}
+						images[currentImage] = null;
+						currentImage++;
+					}
+
+					if (currentImage == images.length) {
+						save_chages();
+					}
+				}
 			})();
 		}
 	}
@@ -184,10 +195,10 @@
 			const requestSize = 10;
 			var historyHeight = this._consensus.blockchain.height - requestSize;
 			var historyEntries = 0;
-	
+
 			var self = this;
-	
-			function getHistory() {		
+
+			function getHistory() {
 				self.knownReceipts = self.knownReceipts || new Map();
 				return self.requestTransactionHistory(addresses, self.knownReceipts, historyHeight).then(function (history) {
 					var resultEntries = (history.newTransactions.length || 0) + (history.removedTransactions.length || 0) + (history.unresolvedTransactions.length || 0);
@@ -204,13 +215,13 @@
 					}
 				});
 			}
-	
+
 			getHistory().then(function() {
 				console.log("!!! got new history");
 				const newHistory = self.historyResults;
 				self.historyResults = new Array();
 				self._onHistoryChanged(newHistory);
-			});	
+			});
 		}
 	}
 
