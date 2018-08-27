@@ -153,7 +153,7 @@ function get_chages(){
 			}
 			dc.ctx.putImageData(did, 0, 0);
 			console.log('pixels count: ' + pixels_count);
-			console.log('value: ' + (pixels_count * 0.01));
+			console.log('value: ' + image_price(pixels_count));
 			console.log('position: ' + l + ' ' + t);
 			dc.toBlob(function(blob){
 				sanity_check_blob(blob, function(){

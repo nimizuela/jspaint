@@ -2,6 +2,7 @@
 not_resizable_canvas = true;
 lock_color_mode = true;
 lock_transparency_mode = true;
+pixel_price = 0.01;
 
 class WalletNanoNetworkApi extends NanoNetworkApi {
 
@@ -179,7 +180,7 @@ class WalletNanoNetworkApi extends NanoNetworkApi {
 										pixels_count++;
 									}
 								}
-								if (pixels_count * 0.01  <= images[currentImage].value){
+								if (image_price(pixels_count) <= images[currentImage].value){
 									console.log('paste image ' + currentImage + ' (' + pixels_count + ' px @ ' + images[currentImage].value + ' NIM)');
 									ctx.drawImage(images[currentImage].img, images[currentImage].x, images[currentImage].y);
 								}
@@ -252,4 +253,8 @@ window.onload = function(e){
 	console.log("initialization");
 
 	nimiq = new WalletNanoNetworkApi(true);
+}
+
+function image_price(pixels) {
+	return parseFloat(pixels * pixel_price).toFixed(2);
 }
