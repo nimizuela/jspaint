@@ -17,7 +17,7 @@
 		console.log('consensus established at height:' + this._consensus.blockchain.height);
 		this._updateWallet();
 		// Recheck balance on every head change.
-		this._consensus.blockchain.on('head-changed', this._updateWallet);
+		this._consensus.blockchain.on('head-changed', this._updateWallet.bind(this));
 	}
 
 	_onConsensusLost() {
@@ -193,78 +193,6 @@
 		this._recheckBalances(this.addresses);
 		this.requestTransactionHistory(this.addresses).then(this._onHistoryChanged.bind(this));
 	}
-
-	/*
-	_compileTransactionHistory(addresses, entries = 10) {
-		this.historyResults = this.historyResults || new Array();
-
-		if (this.historyResults.length > 0) {
-			console.log("!!! got old history");
-			const oldHistory = this.historyResults;
-			this.historyResults = new Array();
-			this._onHistoryChanged(oldHistory);
-
-		} else {
-			console.log("!!! trying to get history");
-			const requestSize = 10;
-			var historyHeight = this._consensus.blockchain.height - requestSize;
-			var historyEntries = 0;
-
-			var self = this;
-
-			function getHistory() {
-				self.knownReceipts = self.knownReceipts || new Map();
-				return self.requestTransactionHistory(addresses, self.knownReceipts, historyHeight).then(function (history) {
-					var resultEntries = (history.newTransactions.length || 0) + (history.removedTransactions.length || 0) + (history.unresolvedTransactions.length || 0);
-					if (resultEntries > 0) {
-						console.log("!!! resultEntries: " + resultEntries);
-						self._addToKnownReceipts(history);
-						self.historyResults.push(history);
-						historyEntries += resultEntries;
-						console.log("!!! historyEntries: " + historyEntries);
-					}
-					if (historyHeight > 0 && historyEntries < entries) {
-						historyHeight -= requestSize;
-						return getHistory();
-					}
-				});
-			}
-
-			getHistory().then(function() {
-				console.log("!!! got new history");
-				const newHistory = self.historyResults;
-				self.historyResults = new Array();
-				self._onHistoryChanged(newHistory);
-			});
-		}
-	}
-
-	_addToKnownReceipts(history) {
-		for(var entry in history) {
-			console.log("!!! entry:" + entry.newTransactions.length);
-			if (entry.newTransactions.length) {
-				for (let i = 0, j = entry.newTransactions.length; i < j; i++) {
-					let tx = entry.newTransactions[i];
-					console.log("!!! tx:" + tx);
-					this.knownReceipts[tx.hash] = tx.blockHash;
-				}
-			}
-			if (entry.removedTransactions.length) {
-				for (let i = 0, j = entry.removedTransactions.length; i < j; i++) {
-					let tx = entry.removedTransactions[i];
-					this.knownReceipts[tx.hash] = tx.blockHash;
-				}
-			}
-			if (entry.unresolvedTransactions.length) {
-				for (let i = 0, j = entry.knownReceipts.length; i < j; i++) {
-					let tx = entry.knownReceipts[i];
-					this.knownReceipts[tx.hash] = tx.blockHash;
-				}
-			}
-		}
-		console.log("!!! knownReceipts: " + this.knownReceipts.size);
-	}
-	*/
 }
 
 var nimiq;
