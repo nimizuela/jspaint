@@ -6,8 +6,8 @@ var opaque_pixels = 0;
 
 var magnification = 1;
 
-var default_canvas_width = 683;
-var default_canvas_height = 384;
+var default_canvas_width = 1000;
+var default_canvas_height = 1000;
 var my_canvas_width = default_canvas_width;
 var my_canvas_height = default_canvas_height;
 
