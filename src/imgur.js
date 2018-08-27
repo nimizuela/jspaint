@@ -140,7 +140,7 @@ function show_imgur_uploader(blob, pixels_count = 0, position_x = 0, position_y 
 						$nimiq_msg.select();
 					});
 
-					var nimiq_url = "https://safe.nimiq.com/#_request/" + default_nimiq_address.replace(" ", "-") + "/" + parseFloat(pixels_count * 0.01).toFixed(2) + "_"
+					var nimiq_url = "https://safe.nimiq.com/#_request/" + default_nimiq_address.replace(/ /g, '-') + "/" + parseFloat(pixels_count * 0.01).toFixed(2) + "_"
 					var $nimiq_url = $(E("a")).attr({id: "imgur-url", target: "_blank"});
 					$nimiq_url.text(nimiq_url);
 					$nimiq_url.attr('href', nimiq_url);
@@ -175,10 +175,12 @@ function show_imgur_uploader(blob, pixels_count = 0, position_x = 0, position_y 
 						"<label>Imgur image URL: </label><br>"
 					).append($imgur_url);
 				}
+				$imgur_window.center();
 
 				var $delete_button = $imgur_window.$Button("Delete", function(){
 					$nimiq_url_area.remove();
 					$imgur_url_area.remove();
+					$imgur_window.center();
 
 					var req = new XMLHttpRequest();
 
@@ -190,7 +192,6 @@ function show_imgur_uploader(blob, pixels_count = 0, position_x = 0, position_y 
 							if(!response) return;
 
 							if(response.success){
-								$imgur_url_area.remove();
 								$imgur_status.text("Deleted successfully");
 							}else{
 								$imgur_status.text("Failed to delete image :(");
