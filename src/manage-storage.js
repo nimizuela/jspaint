@@ -85,11 +85,11 @@ function manage_storage(){
 }
 
 function save_chages(){
-	localStorage.setItem('changes', canvas.toDataURL());
+	localStorage.setItem('rasterized image', canvas.toDataURL());
 }
 
-function clear_chages(){
-	var dataURL = localStorage.getItem('changes');
+function clear_changes(){
+	var dataURL = localStorage.getItem('rasterized image');
 	var img = new Image();
 	img.src = dataURL;
 	img.onload = function (){
@@ -100,7 +100,7 @@ function clear_chages(){
 }
 
 function get_chages(){
-	var dataURL = localStorage.getItem('changes');
+	var dataURL = localStorage.getItem('rasterized image');
 	var img = new Image();
 	img.src = dataURL;
 	img.onload = function (){

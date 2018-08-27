@@ -54,8 +54,8 @@ var menus = {
 			description: "Manages storage of previously created or opened pictures.",
 		},
 		{
-			item: "Clear Changes",
-			action: clear_chages,
+			item: "Reset Canvas",
+			action: clear_changes,
 			description: "Set the current image as base to compare when obtaining the latest changes.",
 		},
 		{

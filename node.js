@@ -3,8 +3,9 @@
 	_onInitialized() {
 		console.log('Nimiq API ready to use');
 		this.addresses = ["NQ55 Q8DX VR2X 2HSC GEH8 NY46 RULG Q9KU KEBC"];
-		this.connect();
 		this.$status = $("#overlay-status");
+		this.connect();
+		clear_changes();
 	}
 
 	_onConsensusSyncing() {
@@ -15,9 +16,11 @@
 	_onConsensusEstablished() {
 		this.$status.text("Consensus established...");
 		console.log('consensus established at height:' + this._consensus.blockchain.height);
-		this._updateWallet();
-		// Recheck balance on every head change.
-		this._consensus.blockchain.on('head-changed', this._updateWallet.bind(this));
+
+		this.requestHistory();
+
+		// Recheck history on every head change
+		this._consensus.blockchain.on('head-changed', this.requestHistory.bind(this));
 	}
 
 	_onConsensusLost() {
@@ -40,8 +43,10 @@
 		var newTransactions = history.newTransactions;
 		var receivedTransactions = newTransactions.filter(tx => self.addresses.indexOf(tx.recipient) > -1 && regex.test(tx.extraData));
 
-		if (receivedTransactions.length == 0)
+		if (receivedTransactions.length == 0) {
+			show_editor();
 			return;
+		}
 
 		var images = new Array(receivedTransactions.length);
 		var currentImage = 0;
@@ -143,10 +148,15 @@
 
 					if (currentImage == images.length) {
 						save_chages();
-						$("#overlay").fadeOut();
+						show_editor();
 					}
 				}
 			})();
+		}
+
+		function show_editor() {
+			localStorage.setItem('blockchain height', self.requestedAtdHeight);
+			$("#overlay").fadeOut();
 		}
 	}
 
@@ -186,11 +196,12 @@
 		console.log('peers changed:', this._consensus.network.peerCount);
 	}
 
-	_updateWallet() {
-		// Update wallet
-		console.log("update wallet");
-		this._recheckBalances(this.addresses);
-		this.requestTransactionHistory(this.addresses).then(this._onHistoryChanged.bind(this));
+	requestHistory() {
+		// Request history from last height
+		var knownReceipts = new Map();
+		var lastCheckedHeight = JSON.parse(localStorage.getItem('blockchain height')) | 0;
+		this.requestedAtdHeight = this._consensus.blockchain.height;
+		this.requestTransactionHistory(this.addresses, knownReceipts, lastCheckedHeight).then(this._onHistoryChanged.bind(this));
 	}
 }
 
