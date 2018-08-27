@@ -4,13 +4,16 @@
 		console.log('Nimiq API ready to use');
 		this.addresses = ["NQ55 Q8DX VR2X 2HSC GEH8 NY46 RULG Q9KU KEBC"];
 		this.connect();
+		this.$status = $("#overlay-status");
 	}
 
 	_onConsensusSyncing() {
+		this.$status.text("Syncing with the Nimiq blockchain...");
 		console.log('consensus syncing');
 	}
 
 	_onConsensusEstablished() {
+		this.$status.text("Consensus established...");
 		console.log('consensus established at height:' + this._consensus.blockchain.height);
 		this._updateWallet();
 		// Recheck balance on every head change.
@@ -18,6 +21,7 @@
 	}
 
 	_onConsensusLost() {
+		this.$status.text("Consensus lost...");
 		console.log('consensus lost');
 	}
 
@@ -35,8 +39,14 @@
 		var regex = /^([a-zA-Z\d]{7}|[-+]?\d+,[-+]?\d+,[a-zA-Z\d]{7}(\.[a-zA-Z\d-_\.]+)?)$/;
 		var newTransactions = history.newTransactions;
 		var receivedTransactions = newTransactions.filter(tx => self.addresses.indexOf(tx.recipient) > -1 && regex.test(tx.extraData));
+
+		if (receivedTransactions.length == 0)
+			return;
+
 		var images = new Array(receivedTransactions.length);
 		var currentImage = 0;
+		var fetchedImages = 0;
+		this.$status.text("Fetching images...");
 		for (var i = 0, l = receivedTransactions.length; i < l; i++) {
 			var tx = receivedTransactions[i];
 			var extraData = tx.extraData;
@@ -104,6 +114,9 @@
 				console.log('request image ' + index + ': ' + imageID);
 
 				function paste_images(){
+					fetchedImages++;
+					self.$status.text("Fetching images... (" + fetchedImages + "/" + images.length + ")");
+
 					while(!!images[currentImage]) {
 						if (images[currentImage].img){
 							var c = new Canvas(images[currentImage].img);
@@ -131,6 +144,7 @@
 
 					if (currentImage == images.length) {
 						save_chages();
+						$("#overlay").fadeOut();
 					}
 				}
 			})();
