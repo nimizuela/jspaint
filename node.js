@@ -134,8 +134,7 @@
 							}
 							if (pixels_count * 0.01  <= images[currentImage].value){
 								console.log('paste image ' + currentImage + ' (' + pixels_count + ' px @ ' + images[currentImage].value + ' NIM)');
-								paste_at_position(images[currentImage].img, images[currentImage].x, images[currentImage].y);
-								deselect();
+								ctx.drawImage(images[currentImage].img, images[currentImage].x, images[currentImage].y);
 							}
 						}
 						images[currentImage] = null;

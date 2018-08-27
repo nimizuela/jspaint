@@ -431,14 +431,6 @@ function paste_from_url(){
 	$input.focus();
 }
 
-function paste_at_position(img, x, y){
-	// Note: relying on select_tool to call deselect();
-	select_tool(get_tool_by_name("Select"));
-
-	selection = new Selection(x, y, img.width, img.height);
-	selection.instantiate(img);
-}
-
 function paste(img){
 
 	if(img.width > canvas.width || img.height > canvas.height){
@@ -461,20 +453,28 @@ function paste(img){
 					ctx.fillRect(0, 0, canvas.width, canvas.height);
 				}
 				ctx.drawImage(original, 0, 0);
-				paste_at_position(img, 0, 0);
+				do_the_paste();
 				$canvas_area.trigger("resize");
 			});
 		}).focus();
 		$w.$Button("Crop", function(){
 			$w.close();
-			paste_at_position(img, 0, 0);
+			do_the_paste();
 		});
 		$w.$Button("Cancel", function(){
 			$w.close();
 		});
 		$w.center();
 	}else{
-		paste_at_position(img, 0, 0);
+		do_the_paste();
+	}
+
+	function do_the_paste(){
+		// Note: relying on select_tool to call deselect();
+		select_tool(get_tool_by_name("Select"));
+
+		selection = new Selection(0, 0, img.width, img.height);
+		selection.instantiate(img);
 	}
 }
 
