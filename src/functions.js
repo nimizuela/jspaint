@@ -433,7 +433,7 @@ function paste_from_url(){
 
 function paste(img){
 
-	if(img.width > canvas.width || img.height > canvas.height){
+	if(!not_resizable_canvas && (img.width > canvas.width || img.height > canvas.height)){
 		var $w = new $FormWindow().addClass("dialogue-window");
 		$w.title("Paint");
 		$w.$main.html(
@@ -875,6 +875,11 @@ function image_attributes(){
 	var $height_label = $(E("label")).appendTo($main).text("Height:");
 	var $width = $(E("input")).appendTo($width_label);
 	var $height = $(E("input")).appendTo($height_label);
+
+	if (not_resizable_canvas){
+		$width.attr("disabled", "true");
+		$height.attr("disabled", "true");
+	}
 
 	$main.find("input")
 		.css({width: "40px"})

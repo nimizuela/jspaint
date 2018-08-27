@@ -1,4 +1,5 @@
 ﻿default_nimiq_address = "NQ55 Q8DX VR2X 2HSC GEH8 NY46 RULG Q9KU KEBC";
+not_resizable_canvas = true;
 
 class WalletNanoNetworkApi extends NanoNetworkApi {
 

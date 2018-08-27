@@ -32,7 +32,7 @@ function $Handles($container, element, options){
 		var dragged = false;
 		var resizes_height = y_axis !== "middle";
 		var resizes_width = x_axis !== "middle";
-		if(size_only && (y_axis === "top" || x_axis === "left")){
+		if(not_resizable_canvas || (size_only && (y_axis === "top" || x_axis === "left"))){
 			$h.addClass("useless-handle");
 		}else{
 			
