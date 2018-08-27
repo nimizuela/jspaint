@@ -16,11 +16,8 @@
 	_onConsensusEstablished() {
 		this.$status.text("Consensus established...");
 		console.log('consensus established at height:' + this._consensus.blockchain.height);
-
+		this.subscribe(this.addresses);
 		this.requestHistory();
-
-		// Recheck history on every head change
-		this._consensus.blockchain.on('head-changed', this.requestHistory.bind(this));
 	}
 
 	_onConsensusLost() {
@@ -30,134 +27,8 @@
 
 	_onBalancesChanged(balances) {
 		console.log('new balances:', balances);
-		for (let [address, balance] of balances) {
-			console.log(address, balance);
-		}
-	}
-
-	_onHistoryChanged(history) {
-		console.log('new history:');
-		var self = this;
-		//var regex = /^[a-zA-Z\d]{7}$/ ;
-		var regex = /^([a-zA-Z\d]{7}|[-+]?\d+,[-+]?\d+,[a-zA-Z\d]{7}(\.[a-zA-Z\d-_\.]+)?)$/;
-		var newTransactions = history.newTransactions;
-		var receivedTransactions = newTransactions.filter(tx => self.addresses.indexOf(tx.recipient) > -1 && regex.test(tx.extraData));
-
-		if (receivedTransactions.length == 0) {
-			show_editor();
-			return;
-		}
-
-		var images = new Array(receivedTransactions.length);
-		var currentImage = 0;
-		var fetchedImages = 0;
-		this.$status.text("Fetching images...");
-		for (var i = 0, l = receivedTransactions.length; i < l; i++) {
-			var tx = receivedTransactions[i];
-			var extraData = tx.extraData;
-			var matches = /^([+-]?\d+)?,?([+-]?\d+)?,?([a-zA-Z\d]{7})(\.[a-zA-Z\d-_\.]+)?$/.exec(extraData);
-			(function() {
-				var req = new XMLHttpRequest();
-				var index = i;
-				var imageX = matches[1] | 0;
-				var imageY = matches[2] | 0;
-				var imageID = matches[3];
-				var imageValue = tx.value;
-
-				req.addEventListener("readystatechange", function() {
-					if(req.readyState == 4){
-						if (req.status == 200){
-							var response = JSON.parse(req.responseText);
-							if(!response) return;
-
-							if(!response.success){
-								return;
-							}
-
-							//console.log(JSON.stringify(response, null, 2));
-
-							var imageW = response.data.width;
-							var imageH = response.data.height;
-							var imageSize = response.data.size;
-							var imageURL = response.data.link;
-							var blob_url = new URL(imageURL);
-
-							load_image_from_URI(blob_url, function(err, img){
-								if(err){
-									return show_resource_load_error_message();
-								}
-
-								var imageData = {
-									"x": imageX,
-									"y": imageY,
-									"width": imageW,
-									"height": imageH,
-									"size": imageSize,
-									"url": imageURL,
-									"id": imageID,
-									"blob_url": blob_url,
-									"img": img,
-									"value": imageValue
-								};
-
-								console.log('got image ' + index + ': ' + imageData.url);
-								images[index] = imageData;
-
-								paste_images();
-							});
-						} else if (req.status == 404){
-							console.log('image ' + index + ' not found: ' + imageID);
-							images[index] = {};
-							paste_images();
-						}
-					}
-				});
-				req.open("GET", "https://api.imgur.com/3/image/" + imageID, true);
-				req.setRequestHeader("Authorization", "Client-ID 203da2f300125a1");
-				req.setRequestHeader("Accept", "application/json");
-				req.send(null);
-				console.log('request image ' + index + ': ' + imageID);
-
-				function paste_images(){
-					fetchedImages++;
-					self.$status.text("Fetching images... (" + fetchedImages + "/" + images.length + ")");
-
-					while(!!images[currentImage]) {
-						if (images[currentImage].img){
-							var c = new Canvas(images[currentImage].img);
-							var id = c.ctx.getImageData(0, 0, c.width, c.height);
-							var pixels_count = 0;
-							for(var i=0; i<id.data.length; i+=4){
-								if (
-									id.data[i+0] != 0 ||
-									id.data[i+1] != 0 ||
-									id.data[i+2] != 0 ||
-									id.data[i+3] != 0
-								){
-									pixels_count++;
-								}
-							}
-							if (pixels_count * 0.01  <= images[currentImage].value){
-								console.log('paste image ' + currentImage + ' (' + pixels_count + ' px @ ' + images[currentImage].value + ' NIM)');
-								ctx.drawImage(images[currentImage].img, images[currentImage].x, images[currentImage].y);
-							}
-						}
-						images[currentImage] = null;
-						currentImage++;
-					}
-
-					if (currentImage == images.length) {
-						save_chages();
-						show_editor();
-					}
-				}
-			})();
-		}
-
-		function show_editor() {
-			localStorage.setItem('blockchain height', self.requestedAtdHeight);
-			$("#overlay").fadeOut();
-		}
+		// Recheck history on balance change
+		this.requestHistory();
 	}
 
 	_onTransactionPending(sender, recipient, value, fee, extraData, hash, validityStartHeight) {
@@ -198,10 +69,133 @@
 
 	requestHistory() {
 		// Request history from last height
+		var self = this;
 		var knownReceipts = new Map();
 		var lastCheckedHeight = JSON.parse(localStorage.getItem('blockchain height')) | 0;
-		this.requestedAtdHeight = this._consensus.blockchain.height;
-		this.requestTransactionHistory(this.addresses, knownReceipts, lastCheckedHeight).then(this._onHistoryChanged.bind(this));
+		var requestedAtdHeight = this._consensus.blockchain.height;
+		this.requestTransactionHistory(this.addresses, knownReceipts, lastCheckedHeight).then(function(history){
+			console.log('got new history');
+			//var regex = /^[a-zA-Z\d]{7}$/ ;
+			var regex = /^([a-zA-Z\d]{7}|[-+]?\d+,[-+]?\d+,[a-zA-Z\d]{7}(\.[a-zA-Z\d-_\.]+)?)$/;
+			var newTransactions = history.newTransactions;
+			var receivedTransactions = newTransactions.filter(tx => self.addresses.indexOf(tx.recipient) > -1 && regex.test(tx.extraData));
+	
+			if (receivedTransactions.length == 0) {
+				show_editor();
+				return;
+			}
+
+			var images = new Array(receivedTransactions.length);
+			var currentImage = 0;
+			var fetchedImages = 0;
+			self.$status.text("Fetching images...");
+			for (var i = 0, l = receivedTransactions.length; i < l; i++) {
+				var tx = receivedTransactions[i];
+				var extraData = tx.extraData;
+				var matches = /^([+-]?\d+)?,?([+-]?\d+)?,?([a-zA-Z\d]{7})(\.[a-zA-Z\d-_\.]+)?$/.exec(extraData);
+				(function() {
+					var req = new XMLHttpRequest();
+					var index = i;
+					var imageX = matches[1] | 0;
+					var imageY = matches[2] | 0;
+					var imageID = matches[3];
+					var imageValue = tx.value;
+	
+					req.addEventListener("readystatechange", function() {
+						if(req.readyState == 4){
+							if (req.status == 200){
+								var response = JSON.parse(req.responseText);
+								if(!response) return;
+	
+								if(!response.success){
+									return;
+								}
+	
+								//console.log(JSON.stringify(response, null, 2));
+	
+								var imageW = response.data.width;
+								var imageH = response.data.height;
+								var imageSize = response.data.size;
+								var imageURL = response.data.link;
+								var blob_url = new URL(imageURL);
+	
+								load_image_from_URI(blob_url, function(err, img){
+									if(err){
+										return show_resource_load_error_message();
+									}
+	
+									var imageData = {
+										"x": imageX,
+										"y": imageY,
+										"width": imageW,
+										"height": imageH,
+										"size": imageSize,
+										"url": imageURL,
+										"id": imageID,
+										"blob_url": blob_url,
+										"img": img,
+										"value": imageValue
+									};
+	
+									console.log('got image ' + index + ': ' + imageData.url);
+									images[index] = imageData;
+	
+									paste_images();
+								});
+							} else if (req.status == 404){
+								console.log('image ' + index + ' not found: ' + imageID);
+								images[index] = {};
+								paste_images();
+							}
+						}
+					});
+					req.open("GET", "https://api.imgur.com/3/image/" + imageID, true);
+					req.setRequestHeader("Authorization", "Client-ID 203da2f300125a1");
+					req.setRequestHeader("Accept", "application/json");
+					req.send(null);
+					console.log('request image ' + index + ': ' + imageID);
+	
+					function paste_images(){
+						fetchedImages++;
+						self.$status.text("Fetching images... (" + fetchedImages + "/" + images.length + ")");
+	
+						while(!!images[currentImage]) {
+							if (images[currentImage].img){
+								var c = new Canvas(images[currentImage].img);
+								var id = c.ctx.getImageData(0, 0, c.width, c.height);
+								var pixels_count = 0;
+								for(var i=0; i<id.data.length; i+=4){
+									if (
+										id.data[i+0] != 0 ||
+										id.data[i+1] != 0 ||
+										id.data[i+2] != 0 ||
+										id.data[i+3] != 0
+									){
+										pixels_count++;
+									}
+								}
+								if (pixels_count * 0.01  <= images[currentImage].value){
+									console.log('paste image ' + currentImage + ' (' + pixels_count + ' px @ ' + images[currentImage].value + ' NIM)');
+									ctx.drawImage(images[currentImage].img, images[currentImage].x, images[currentImage].y);
+								}
+							}
+							images[currentImage] = null;
+							currentImage++;
+						}
+	
+						if (currentImage == images.length) {
+							save_chages();
+							show_editor();
+						}
+					}
+				})();
+			}
+	
+			function show_editor() {
+				localStorage.setItem('blockchain height', requestedAtdHeight);
+				$("#overlay").fadeOut();
+			}
+		});
 	}
 }
 
