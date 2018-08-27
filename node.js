@@ -1,8 +1,10 @@
-﻿class WalletNanoNetworkApi extends NanoNetworkApi {
+﻿default_nimiq_address = "NQ55 Q8DX VR2X 2HSC GEH8 NY46 RULG Q9KU KEBC";
+
+class WalletNanoNetworkApi extends NanoNetworkApi {
 
 	_onInitialized() {
 		console.log('Nimiq API ready to use');
-		this.addresses = ["NQ55 Q8DX VR2X 2HSC GEH8 NY46 RULG Q9KU KEBC"];
+		this.addresses = [default_nimiq_address];
 		this.$status = $("#overlay-status");
 		this.connect();
 		clear_changes();

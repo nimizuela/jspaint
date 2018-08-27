@@ -140,7 +140,7 @@ function show_imgur_uploader(blob, pixels_count = 0, position_x = 0, position_y 
 						$nimiq_msg.select();
 					});
 
-					var nimiq_url = "https://safe.nimiq.com/#_request/NQ55-Q8DX-VR2X-2HSC-GEH8-NY46-RULG-Q9KU-KEBC/" + parseFloat(pixels_count * 0.01).toFixed(2) + "_"
+					var nimiq_url = "https://safe.nimiq.com/#_request/" + default_nimiq_address.replace(" ", "-") + "/" + parseFloat(pixels_count * 0.01).toFixed(2) + "_"
 					var $nimiq_url = $(E("a")).attr({id: "imgur-url", target: "_blank"});
 					$nimiq_url.text(nimiq_url);
 					$nimiq_url.attr('href', nimiq_url);
