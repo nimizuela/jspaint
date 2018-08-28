@@ -23,7 +23,7 @@ class WalletNanoNetworkApi extends NanoNetworkApi {
 		this.$status.text("Consensus established...");
 		console.log('consensus established at height:' + this._consensus.blockchain.height);
 		this.subscribe(this.addresses);
-		this.requestHistory();
+		//this.requestHistory();
 	}
 
 	_onConsensusLost() {
@@ -109,6 +109,7 @@ class WalletNanoNetworkApi extends NanoNetworkApi {
 	
 					req.addEventListener("readystatechange", function() {
 						if(req.readyState == 4){
+							// posible status codes -> https://api.imgur.com/errorhandling#200
 							if (req.status == 200){
 								var response = JSON.parse(req.responseText);
 								if(!response) return;
@@ -143,13 +144,13 @@ class WalletNanoNetworkApi extends NanoNetworkApi {
 										"value": imageValue
 									};
 	
-									console.log('got image ' + index + ': ' + imageData.url);
+									console.log('got image ' + (index + 1) + ': ' + imageData.url);
 									images[index] = imageData;
 	
 									paste_images();
 								});
-							} else if (req.status == 404){
-								console.log('image ' + index + ' not found: ' + imageID);
+							} else {
+								console.log('image ' + (index + 1) + ' returned error ' + req.status + ': ' + imageID);
 								images[index] = {};
 								paste_images();
 							}
@@ -159,7 +160,7 @@ class WalletNanoNetworkApi extends NanoNetworkApi {
 					req.setRequestHeader("Authorization", "Client-ID 203da2f300125a1");
 					req.setRequestHeader("Accept", "application/json");
 					req.send(null);
-					console.log('request image ' + index + ': ' + imageID);
+					console.log('requested image ' + (index + 1) + ': ' + imageID);
 	
 					function paste_images(){
 						fetchedImages++;
@@ -181,7 +182,7 @@ class WalletNanoNetworkApi extends NanoNetworkApi {
 									}
 								}
 								if (image_price(pixels_count) <= images[currentImage].value){
-									console.log('paste image ' + currentImage + ' (' + pixels_count + ' px @ ' + images[currentImage].value + ' NIM)');
+									console.log('paste image ' + (currentImage + 1) + ' (' + pixels_count + ' px @ ' + images[currentImage].value + ' NIM)');
 									ctx.drawImage(images[currentImage].img, images[currentImage].x, images[currentImage].y);
 								}
 							}
