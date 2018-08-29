@@ -157,7 +157,7 @@ class WalletNanoNetworkApi extends NanoNetworkApi {
 						}
 					});
 					req.open("GET", "https://api.imgur.com/3/image/" + imageID, true);
-					req.setRequestHeader("Authorization", "Client-ID 203da2f300125a1");
+					req.setRequestHeader("Authorization", "Client-ID 4d0d3274beac836");
 					req.setRequestHeader("Accept", "application/json");
 					req.send(null);
 					console.log('requested image ' + (index + 1) + ': ' + imageID);

@@ -203,7 +203,7 @@ function show_imgur_uploader(blob, pixels_count = 0, position_x = 0, position_y 
 
 					req.open("DELETE", "https://api.imgur.com/3/image/" + response.data.deletehash, true);
 
-					req.setRequestHeader("Authorization", "Client-ID 203da2f300125a1");
+					req.setRequestHeader("Authorization", "Client-ID 4d0d3274beac836");
 					req.setRequestHeader("Accept", "application/json");
 					req.send(null);
 
@@ -223,7 +223,7 @@ function show_imgur_uploader(blob, pixels_count = 0, position_x = 0, position_y 
 		var form_data = new FormData();
 		form_data.append("image", blob);
 
-		req.setRequestHeader("Authorization", "Client-ID 203da2f300125a1");
+		req.setRequestHeader("Authorization", "Client-ID 4d0d3274beac836");
 		req.setRequestHeader("Accept", "application/json");
 		req.send(form_data);
 
