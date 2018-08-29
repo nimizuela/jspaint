@@ -2,6 +2,8 @@
 function update_magnified_canvas_size(){
 	$canvas.css("width", canvas.width * magnification);
 	$canvas.css("height", canvas.height * magnification);
+	$bg_canvas.css("width", canvas.width * magnification);
+	$bg_canvas.css("height", canvas.height * magnification);
 }
 
 function set_magnification(scale){
