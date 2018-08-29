@@ -238,7 +238,7 @@ $G.on("keydown", function(e){
 		}
 	}else if(e.keyCode === 115){ //F4
 		redo();
-	}else if(e.keyCode === 46){ //Delete
+	}else if(e.keyCode === 46 || e.keyCode === 8){ //Delete | Backspace
 		delete_selection();
 	}else if(e.keyCode === 107 || e.keyCode === 109){ // Numpad Plus and Minus
 		var plus = e.keyCode === 107;
