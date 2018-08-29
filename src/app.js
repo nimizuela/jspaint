@@ -1,6 +1,6 @@
 
 var aliasing = true;
-var transparency = false;
+var transparency = true;
 var monochrome = false;
 var opaque_pixels = 0;
 
@@ -13,6 +13,9 @@ var my_canvas_height = default_canvas_height;
 
 var canvas = new Canvas();
 var ctx = canvas.ctx;
+
+var bg_canvas = new Canvas();
+var bg_ctx = bg_canvas.ctx;
 
 var palette = [
 	"#000000","#787878","#790300","#757A01","#007902","#007778","#0A0078","#7B0077","#767A38","#003637","#286FFE","#083178","#4C00FE","#783B00",
@@ -60,8 +63,12 @@ var $H = $(E("div")).addClass("horizontal").appendTo($V);
 var $canvas_area = $(E("div")).addClass("canvas-area").appendTo($H);
 $canvas_area.attr("touch-action", "pan-x pan-y");
 
+var $bg_canvas = $(bg_canvas).appendTo($canvas_area);
+$bg_canvas.addClass("nimiq-canvas");
+
 var $canvas = $(canvas).appendTo($canvas_area);
 $canvas.attr("touch-action", "none");
+$canvas.addClass("mycanvas");
 
 var $canvas_handles = $Handles($canvas_area, canvas, {
 	outset: 4,
@@ -106,6 +113,8 @@ $canvas.on("user-resized", function(e, _x, _y, width, height){
 	undoable(0, function(){
 		canvas.width = Math.max(1, width);
 		canvas.height = Math.max(1, height);
+		bg_canvas.width = Math.max(1, width);
+		bg_canvas.height = Math.max(1, height);
 		ctx.disable_image_smoothing();
 		
 		if(!transparency){
@@ -142,6 +151,8 @@ storage.get({
 	my_canvas_height = values.height;
 	canvas.width = Math.max(1, my_canvas_width);
 	canvas.height = Math.max(1, my_canvas_height);
+	bg_canvas.width = Math.max(1, my_canvas_width);
+	bg_canvas.height = Math.max(1, my_canvas_height);
 	ctx.disable_image_smoothing();
 	if(!transparency){
 		ctx.fillStyle = colors.background;

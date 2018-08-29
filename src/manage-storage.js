@@ -84,8 +84,8 @@ function manage_storage(){
 	$storage_manager.center();
 }
 
-function save_chages(){
-	localStorage.setItem('rasterized image', canvas.toDataURL());
+function save_changes(){
+	localStorage.setItem('rasterized image', bg_canvas.toDataURL("image/png"));
 }
 
 function restore_canvas(){
@@ -94,9 +94,9 @@ function restore_canvas(){
 		var img = new Image();
 		img.src = dataURL;
 		img.onload = function (){
-			ctx.fillStyle="white";
-			ctx.fillRect(0, 0, canvas.width, canvas.height);
-			ctx.drawImage(img, 0, 0);
+			//ctx.fillStyle = "white";
+			//ctx.fillRect(0, 0, canvas.width, canvas.height);
+			bg_ctx.drawImage(img, 0, 0);
 		};
 		return true;	
 	}
@@ -104,66 +104,64 @@ function restore_canvas(){
 }
 
 function get_chages(){
-	var dataURL = localStorage.getItem('rasterized image');
-	var img = new Image();
-	img.src = dataURL;
-	img.onload = function (){
-		var sc = new Canvas(canvas.width, canvas.height);
-		sc.ctx.drawImage(img, 0, 0);
-		var sid = sc.ctx.getImageData(0, 0, canvas.width, canvas.height);
-		var cid = ctx.getImageData(0, 0, canvas.width, canvas.height);
-		var l = canvas.width;
-		var r = 0;
-		var t = canvas.height;
-		var b = 0;
-		for(var i=0; i<cid.data.length; i+=4){
-			if (
-				cid.data[i+0] != sid.data[i+0] ||
-				cid.data[i+1] != sid.data[i+1] ||
-				cid.data[i+2] != sid.data[i+2] ||
-				cid.data[i+3] != sid.data[i+3]
-			){
-				var x = (i / 4) % canvas.width;
-				var y = ~~((i / 4) / canvas.width);
-				if (x < l) l = x;
-				if (x > r) r = x;
-				if (y < t) t = y;
-				if (y > b) b = y;
+	var bg_id = bg_ctx.getImageData(0, 0, canvas.width, canvas.height);
+	var sid = ctx.getImageData(0, 0, canvas.width, canvas.height);
+	var l = canvas.width;
+	var r = 0;
+	var t = canvas.height;
+	var b = 0;
+	for(var i=0; i<sid.data.length; i+=4){
+		if (pixel_changed()){
+			var x = (i / 4) % canvas.width;
+			var y = ~~((i / 4) / canvas.width);
+			if (x < l) l = x;
+			if (x > r) r = x;
+			if (y < t) t = y;
+			if (y > b) b = y;
+		}
+	}
+	var w = r - l + 1;
+	var h = b - t + 1;
+	//console.log([w, h]);
+	if (w > 0 && h > 0){
+		//console.log([l, t, w, h]);
+		var bg_id = bg_ctx.getImageData(l, t, w, h);
+		var sid = ctx.getImageData(l, t, w, h);
+		var dc = new Canvas(w, h);
+		var did = dc.ctx.getImageData(0, 0, w, h);
+		var pixels_count = 0;
+		for(var i=0; i<did.data.length; i+=4){
+			if (pixel_changed()){
+				did.data[i+0] = sid.data[i+0];
+				did.data[i+1] = sid.data[i+1];
+				did.data[i+2] = sid.data[i+2];
+				did.data[i+3] = sid.data[i+3];
+				pixels_count++;
 			}
 		}
-		var w = r - l + 1;
-		var h = b - t + 1;
-		//console.log([w, h]);
-		if (w > 0 && h > 0){
-			//console.log([l, t, w, h]);
-			var sid = sc.ctx.getImageData(l, t, w, h);
-			var cid = ctx.getImageData(l, t, w, h);
-			var dc = new Canvas(w, h);
-			var did = dc.ctx.getImageData(0, 0, w, h);
-			var pixels_count = 0;
-			for(var i=0; i<did.data.length; i+=4){
-				if (
-					cid.data[i+0] != sid.data[i+0] ||
-					cid.data[i+1] != sid.data[i+1] ||
-					cid.data[i+2] != sid.data[i+2] ||
-					cid.data[i+3] != sid.data[i+3]
-				){
-					did.data[i+0] = cid.data[i+0];
-					did.data[i+1] = cid.data[i+1];
-					did.data[i+2] = cid.data[i+2];
-					did.data[i+3] = cid.data[i+3];
-					pixels_count++;
-				}
-			}
-			dc.ctx.putImageData(did, 0, 0);
-			console.log('pixels count: ' + pixels_count);
-			console.log('value: ' + image_price(pixels_count));
-			console.log('position: ' + l + ' ' + t);
-			dc.toBlob(function(blob){
-				sanity_check_blob(blob, function(){
-					show_imgur_uploader(blob, pixels_count, l, t);
-				});
+		dc.ctx.putImageData(did, 0, 0);
+		console.log('pixels count: ' + pixels_count);
+		console.log('position: ' + l + ' ' + t);
+		console.log('value: ' + image_price(pixels_count));
+		dc.toBlob(function(blob){
+			sanity_check_blob(blob, function(){
+				show_imgur_uploader(blob, pixels_count, l, t);
 			});
-		}
-	};
+		});
+	}
+
+	function pixel_changed(){
+		return (
+			sid.data[i+0] != 0 ||
+			sid.data[i+1] != 0 ||
+			sid.data[i+2] != 0 ||
+			sid.data[i+3] != 0
+		) &&
+		(
+			sid.data[i+0] != bg_id.data[i+0] ||
+			sid.data[i+1] != bg_id.data[i+1] ||
+			sid.data[i+2] != bg_id.data[i+2] ||
+			sid.data[i+3] != bg_id.data[i+3]
+		);
+	}
 }

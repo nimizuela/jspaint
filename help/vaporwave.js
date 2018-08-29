@@ -18,6 +18,8 @@ var animate = function () {
 	){
 		canvas.width = canvas.parentElement.offsetWidth;
 		canvas.height = canvas.parentElement.offsetHeight;
+		bg_canvas.width = bg_canvas.parentElement.offsetWidth;
+		bg_canvas.height = bg_canvas.parentElement.offsetHeight;
 	}
 
 	var clouds_scale = 1;

@@ -10,29 +10,29 @@ class WalletNanoNetworkApi extends NanoNetworkApi {
 	_onInitialized() {
 		console.log('Nimiq API ready to use');
 		this.addresses = [default_nimiq_address];
-		this.$status = $("#overlay-status");
-		this.connect();
-		// force fetching all images from the blockchain in case
-		// a rasterized copy of the canvas hasn't been saved yet
 		if (!restore_canvas()) {
+			// force fetching all images from the blockchain in case
+			// a rasterized copy of the canvas hasn't been saved yet
 			localStorage.setItem('blockchain height', initial_blockchain_height);
 		}
+		$status_text.text("Connecting to the Nimiq blockchain...");
+		this.connect();
 	}
 
 	_onConsensusSyncing() {
-		this.$status.text("Syncing with the Nimiq blockchain...");
+		$status_text.text("Syncing with the Nimiq blockchain...");
 		console.log('consensus syncing');
 	}
 
 	_onConsensusEstablished() {
-		this.$status.text("Consensus established...");
+		$status_text.text("Consensus established...");
 		console.log('consensus established at height:' + this._consensus.blockchain.height);
 		this.subscribe(this.addresses);
 		//this.requestHistory();
 	}
 
 	_onConsensusLost() {
-		this.$status.text("Consensus lost...");
+		$status_text.text("Consensus lost...");
 		console.log('consensus lost');
 	}
 
@@ -99,7 +99,7 @@ class WalletNanoNetworkApi extends NanoNetworkApi {
 			var images = new Array(receivedTransactions.length);
 			var currentImage = 0;
 			var fetchedImages = 0;
-			self.$status.text("Fetching images...");
+			$status_text.text("Fetching images...");
 			for (var i = 0, l = receivedTransactions.length; i < l; i++) {
 				var tx = receivedTransactions[i];
 				var extraData = tx.extraData;
@@ -167,11 +167,11 @@ class WalletNanoNetworkApi extends NanoNetworkApi {
 					req.setRequestHeader("Authorization", "Client-ID 4d0d3274beac836");
 					req.setRequestHeader("Accept", "application/json");
 					req.send(null);
-					console.log('requested image ' + (index + 1) + ': ' + imageID);
+					console.log('requesting image ' + (index + 1) + ': ' + imageID);
 	
 					function paste_images(){
 						fetchedImages++;
-						self.$status.text("Fetching images... (" + fetchedImages + "/" + images.length + ")");
+						$status_text.text("Fetching images... (" + fetchedImages + "/" + images.length + ")");
 	
 						while(!!images[currentImage]) {
 							if (images[currentImage].img){
@@ -190,7 +190,7 @@ class WalletNanoNetworkApi extends NanoNetworkApi {
 								}
 								if (image_price(pixels_count) <= images[currentImage].value){
 									console.log('paste image ' + (currentImage + 1) + ' (' + pixels_count + ' px @ ' + images[currentImage].value + ' NIM)');
-									ctx.drawImage(images[currentImage].img, images[currentImage].x, images[currentImage].y);
+									bg_ctx.drawImage(images[currentImage].img, images[currentImage].x, images[currentImage].y);
 								}
 							}
 							images[currentImage] = null;
@@ -198,7 +198,7 @@ class WalletNanoNetworkApi extends NanoNetworkApi {
 						}
 	
 						if (currentImage == images.length) {
-							save_chages();
+							save_changes();
 							show_editor();
 						}
 					}
@@ -207,7 +207,7 @@ class WalletNanoNetworkApi extends NanoNetworkApi {
 	
 			function show_editor() {
 				localStorage.setItem('blockchain height', requestedAtdHeight);
-				$("#overlay").fadeOut();
+				$status_text.default();
 			}
 		});
 	}

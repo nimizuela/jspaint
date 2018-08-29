@@ -32,28 +32,6 @@
 	vertical-align: middle;
 	cursor: pointer;
 }
-
-.waiting-container {
-	position: absolute;
-	left: 50%;
-	top: 50%;
-	-webkit-transform: translate(-50%, -50%);
-	transform: translate(-50%, -50%);
-}
-
-.waiting-image {
-	position: relative;
-	left: 50%;
-	-webkit-transform: translateX(-50%);
-	transform: translateX(-50%);
-	height: 64px;
-	width: 60px;
-	background: url(images/waiting.png) no-repeat 0 0;
-	/*visibility: hidden; */
-	-webkit-animation: waiting-animation 1s steps(1) infinite;
-	/*-webkit-animation: waiting-animation 1s steps(1) infinite; */
-	text-align: center;
-}
 	
 @keyframes waiting-animation {
 	0% {
@@ -79,19 +57,18 @@
 	}
 }
 
-#overlay {
+.mycanvas {
 	position: absolute;
-	left: 0;
 	top: 0;
-	width: 100%;
-	height: 100%;
-	background-color: rgba(255, 255, 255, 0.75);
-	z-index: 10000;
+	left: 0;
+	margin: 3px;
+	background: transparent !important;
 }
 
-#overlay-status {
-	font-family: 'Segoe UI', sans-serif;
-	font-size: 12px;
-	margin-top: 6px;
-    display: inline-block;
+.nimiq-canvas {
+	position: absolute;
+	top: 0;
+	left: 0;
+	margin: 3px;
+	background: white !important;
 }
