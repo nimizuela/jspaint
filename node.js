@@ -149,10 +149,12 @@ class WalletNanoNetworkApi extends NanoNetworkApi {
 	
 									paste_images();
 								});
-							} else {
-								console.log('image ' + (index + 1) + ' returned error ' + req.status + ': ' + imageID);
+							} else if (req.status == 404) {
+								console.log('image ' + (index + 1) + ' not found: ' + imageID);
 								images[index] = {};
 								paste_images();
+							} else {
+								console.log('image ' + (index + 1) + ' returned error ' + req.status + ': ' + imageID);
 							}
 						}
 					});

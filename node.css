@@ -19,6 +19,7 @@
 	width: 100%;
 	height: calc(100% - 15px);
 	font-family: monospace;
+	font-size: 1em;
 }
 
 #mylogger-toggle {
