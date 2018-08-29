@@ -89,17 +89,20 @@ function save_changes(){
 }
 
 function restore_canvas(){
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	var dataURL = localStorage.getItem('rasterized image');
 	if (dataURL){
 		var img = new Image();
 		img.src = dataURL;
 		img.onload = function (){
+			bg_ctx.clearRect(0, 0, canvas.width, canvas.height);
 			//ctx.fillStyle = "white";
 			//ctx.fillRect(0, 0, canvas.width, canvas.height);
 			bg_ctx.drawImage(img, 0, 0);
 		};
 		return true;	
 	}
+	bg_ctx.clearRect(0, 0, canvas.width, canvas.height);
 	return false;
 }
 

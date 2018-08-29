@@ -259,6 +259,7 @@ window.onload = function(e){
 	}
 
 	console.log("initialization");
+	$status_text.text("Initializing Nimiq blockchain node...");
 
 	nimiq = new WalletNanoNetworkApi(true);
 }
