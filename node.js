@@ -3,6 +3,7 @@ not_resizable_canvas = true;
 lock_color_mode = true;
 lock_transparency_mode = true;
 pixel_price = 0.01;
+initial_blockchain_height = 0;
 
 class WalletNanoNetworkApi extends NanoNetworkApi {
 
@@ -11,7 +12,11 @@ class WalletNanoNetworkApi extends NanoNetworkApi {
 		this.addresses = [default_nimiq_address];
 		this.$status = $("#overlay-status");
 		this.connect();
-		clear_changes();
+		// force fetching all images from the blockchain in case
+		// a rasterized copy of the canvas hasn't been saved yet
+		if (!restore_canvas()) {
+			localStorage.setItem('blockchain height', initial_blockchain_height);
+		}
 	}
 
 	_onConsensusSyncing() {
@@ -77,7 +82,7 @@ class WalletNanoNetworkApi extends NanoNetworkApi {
 		// Request history from last height
 		var self = this;
 		var knownReceipts = new Map();
-		var lastCheckedHeight = JSON.parse(localStorage.getItem('blockchain height')) | 0;
+		var lastCheckedHeight = JSON.parse(localStorage.getItem('blockchain height')) | initial_blockchain_height;
 		var requestedAtdHeight = this._consensus.blockchain.height;
 		this.requestTransactionHistory(this.addresses, knownReceipts, lastCheckedHeight).then(function(history){
 			console.log('got new history');

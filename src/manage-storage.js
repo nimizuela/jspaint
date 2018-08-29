@@ -88,15 +88,19 @@ function save_chages(){
 	localStorage.setItem('rasterized image', canvas.toDataURL());
 }
 
-function clear_changes(){
+function restore_canvas(){
 	var dataURL = localStorage.getItem('rasterized image');
-	var img = new Image();
-	img.src = dataURL;
-	img.onload = function (){
-		ctx.fillStyle="white";
-		ctx.fillRect(0, 0, canvas.width, canvas.height);
-		ctx.drawImage(img, 0, 0);
-	};
+	if (dataURL){
+		var img = new Image();
+		img.src = dataURL;
+		img.onload = function (){
+			ctx.fillStyle="white";
+			ctx.fillRect(0, 0, canvas.width, canvas.height);
+			ctx.drawImage(img, 0, 0);
+		};
+		return true;	
+	}
+	return false;
 }
 
 function get_chages(){

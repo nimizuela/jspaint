@@ -55,7 +55,7 @@ var menus = {
 		},
 		{
 			item: "Reset Canvas",
-			action: clear_changes,
+			action: restore_canvas,
 			description: "Set the current image as base to compare when obtaining the latest changes.",
 		},
 		{
