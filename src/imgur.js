@@ -133,6 +133,11 @@ function show_imgur_uploader(blob, pixels_count = 0, position_x = 0, position_y 
 				if (pixels_count > 0){
 					var nimiq_msg = ((position_x > 0 || position_y > 0) ? position_x + "," + position_y + "," : "") + response.data.id;
 					var $nimiq_msg = $(E("input")).css({
+						fontSize: "1em",
+						fontFamily: "Arial, sans-serif",
+						fontWeight: "bold",
+						textAlign: "center",
+						backgroundColor: "yellow"
 					});
 					$nimiq_msg.attr('readonly', true);
 					$nimiq_msg.val(nimiq_msg);
