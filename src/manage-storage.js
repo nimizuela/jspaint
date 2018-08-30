@@ -85,12 +85,12 @@ function manage_storage(){
 }
 
 function save_changes(){
-	localStorage.setItem('rasterized image', bg_canvas.toDataURL("image/png"));
+	localStorage.setItem(default_nimiq_address + '|rasterized image', bg_canvas.toDataURL("image/png"));
 }
 
 function restore_canvas(){
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	var dataURL = localStorage.getItem('rasterized image');
+	var dataURL = localStorage.getItem(default_nimiq_address + '|rasterized image');
 	if (dataURL){
 		var img = new Image();
 		img.src = dataURL;

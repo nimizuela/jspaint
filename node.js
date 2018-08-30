@@ -13,7 +13,7 @@ class WalletNanoNetworkApi extends NanoNetworkApi {
 		if (!restore_canvas()) {
 			// force fetching all images from the blockchain in case
 			// a rasterized copy of the canvas hasn't been saved yet
-			localStorage.setItem('blockchain height', initial_blockchain_height);
+			localStorage.setItem(default_nimiq_address + '|blockchain height', initial_blockchain_height);
 		}
 		$status_text.text("Connecting to the Nimiq blockchain...");
 		this.connect();
@@ -82,7 +82,7 @@ class WalletNanoNetworkApi extends NanoNetworkApi {
 		// Request history from last height
 		var self = this;
 		var knownReceipts = new Map();
-		var lastCheckedHeight = JSON.parse(localStorage.getItem('blockchain height')) | initial_blockchain_height;
+		var lastCheckedHeight = JSON.parse(localStorage.getItem(default_nimiq_address + '|blockchain height')) | initial_blockchain_height;
 		var requestedAtdHeight = this._consensus.blockchain.height;
 		this.requestTransactionHistory(this.addresses, knownReceipts, lastCheckedHeight).then(function(history){
 			console.log('got new history');
@@ -207,7 +207,7 @@ class WalletNanoNetworkApi extends NanoNetworkApi {
 			}
 	
 			function show_editor() {
-				localStorage.setItem('blockchain height', requestedAtdHeight);
+				localStorage.setItem(default_nimiq_address + '|blockchain height', requestedAtdHeight);
 				$status_nimiq_connection.removeClass("status-nimiq-connecting");
 				$status_text.default();
 			}
@@ -267,11 +267,6 @@ window.onload = function(e){
 		default_nimiq_address = requested_address.replace(/[-_]/g, " ");
 	}
 	console.log('showing Nimiq address: ' + default_nimiq_address);
-
-	if (localStorage.getItem('requested address') != default_nimiq_address) {
-		localStorage.removeItem('rasterized image');
-		localStorage.setItem('requested address', default_nimiq_address);
-	}
 
 	$status_text.text("Initializing Nimiq blockchain node...");
 	$status_nimiq_connection.addClass("status-nimiq-connecting");
