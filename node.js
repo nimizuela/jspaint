@@ -89,6 +89,7 @@ class WalletNanoNetworkApi extends NanoNetworkApi {
 			//var regex = /^[a-zA-Z\d]{7}$/ ;
 			var regex = /^([a-zA-Z\d]{7}|[-+]?\d+,[-+]?\d+,[a-zA-Z\d]{7}(\.[a-zA-Z\d-_\.]+)?)$/;
 			var newTransactions = history.newTransactions;
+			//console.log(JSON.stringify(newTransactions, null, 2));
 			var receivedTransactions = newTransactions.filter(tx => self.addresses.indexOf(tx.recipient) > -1 && regex.test(tx.extraData));
 	
 			if (receivedTransactions.length == 0) {
@@ -260,6 +261,18 @@ window.onload = function(e){
 	}
 
 	console.log("initialization");
+
+	var requested_address = get_param("address");
+	if (requested_address) {
+		default_nimiq_address = requested_address.replace(/[-_]/g, " ");
+	}
+	console.log('showing Nimiq address: ' + default_nimiq_address);
+
+	if (localStorage.getItem('requested address') != default_nimiq_address) {
+		localStorage.removeItem('rasterized image');
+		localStorage.setItem('requested address', default_nimiq_address);
+	}
+
 	$status_text.text("Initializing Nimiq blockchain node...");
 	$status_nimiq_connection.addClass("status-nimiq-connecting");
 
@@ -268,4 +281,12 @@ window.onload = function(e){
 
 function image_price(pixels) {
 	return parseFloat(pixels * pixel_price).toFixed(2);
+}
+
+function get_param(name) {
+	var regex = new RegExp('[?&]'+encodeURIComponent(name)+'=([^&]*)');
+	var matches = regex.exec(location.search)
+	if (matches) {
+		return decodeURIComponent(matches[1]);
+	}
 }
