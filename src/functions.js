@@ -913,13 +913,13 @@ function image_attributes(){
 	}).triggerHandler("change");
 
 	var $colors = $(E("fieldset")).appendTo($main).append('<legend>Colors</legend>');
-	$colors.append('<label><input type="radio" name="colors" value="monochrome" ' + (lock_color_mode ? 'disabled="true"' : '') + '>Black and White</label>');
-	$colors.append('<label><input type="radio" name="colors" value="polychrome" ' + (lock_color_mode ? 'disabled="true"' : '') + '>Color</label>');
+	$colors.append('<label><input type="radio" name="colors" value="monochrome" ' + (lock_color_mode ? 'disabled' : '') + '>Black and White</label>');
+	$colors.append('<label><input type="radio" name="colors" value="polychrome" ' + (lock_color_mode ? 'disabled' : '') + '>Color</label>');
 	$colors.find("[value=" + (monochrome ? "monochrome" : "polychrome") + "]").attr({checked: true});
 
 	var $transparency = $(E("fieldset")).appendTo($main).append('<legend>Transparency</legend>');
-	$transparency.append('<label><input type="radio" name="transparency" value="transparent" ' + (lock_transparency_mode ? 'disabled="true"' : '') + '>Transparent</label>');
-	$transparency.append('<label><input type="radio" name="transparency" value="opaque" ' + (lock_transparency_mode ? 'disabled="true"' : '') + '>Opaque</label>');
+	$transparency.append('<label><input type="radio" name="transparency" value="transparent" ' + (lock_transparency_mode ? 'disabled' : '') + '>Transparent</label>');
+	$transparency.append('<label><input type="radio" name="transparency" value="opaque" ' + (lock_transparency_mode ? 'disabled' : '') + '>Opaque</label>');
 	$transparency.find("[value=" + (transparency ? "transparent" : "opaque") + "]").attr({checked: true});
 
 	// Buttons on the right
