@@ -22,6 +22,14 @@
 	font-size: 1em;
 }
 
+#mylogger::selection {
+	background: lightblue; /* WebKit/Blink Browsers */
+}
+
+#mylogger::-moz-selection {
+	background: lightblue; /* Gecko Browsers */
+}
+
 #mylogger-toggle {
 	float: right;
 	text-align: center;
