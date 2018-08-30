@@ -41,27 +41,21 @@
 	cursor: pointer;
 }
 	
-@keyframes waiting-animation {
+@keyframes nimiq-connecting {
 	0% {
-		background-position: 0 0;
+		background-position: -16px 0;
 	}
-	16.66666667% {
-		background-position: -60px 0;
-	}
-	33.33333333% {
-		background-position: -120px 0;
+	25% {
+		background-position: -32px 0;
 	}
 	50% {
-		background-position: -180px 0;
+		background-position: -48px 0;
 	}
-	66.66666667% {
-		background-position: -240px 0;
-	}
-	83.33333333% {
-		background-position: -300px 0;
+	75% {
+		background-position: -64px 0;
 	}
 	100% {
-		background-position: 0 0;
+		background-position: -16px 0;
 	}
 }
 
@@ -79,4 +73,18 @@
 	left: 0;
 	margin: 3px;
 	background: white !important;
+}
+
+.status-nimiq-connection {
+	background: url(images/nimiq-connection.png);
+	width: 16px;
+	height: 16px;
+	margin-left: 2px;
+	margin-right: 2px;
+}
+
+.status-nimiq-connecting {
+	animation: nimiq-connecting 1s steps(1) infinite;
+	-webkit-animation: nimiq-connecting 1s steps(1) infinite;
+	/*-webkit-animation: nimiq-connecting 1s steps(1) infinite; */ 
 }

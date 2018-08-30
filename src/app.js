@@ -83,6 +83,7 @@ var $left = $(E("div")).addClass("component-area").prependTo($H);
 var $right = $(E("div")).addClass("component-area").appendTo($H);
 
 var $status_area = $(E("div")).addClass("status-area").appendTo($V);
+var $status_nimiq_connection = $(E("div")).addClass("status-nimiq-connection").appendTo($status_area);
 var $status_text = $(E("div")).addClass("status-text").appendTo($status_area);
 var $status_position = $(E("div")).addClass("status-coordinates").appendTo($status_area);
 var $status_size = $(E("div")).addClass("status-coordinates").appendTo($status_area);

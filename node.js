@@ -207,6 +207,7 @@ class WalletNanoNetworkApi extends NanoNetworkApi {
 	
 			function show_editor() {
 				localStorage.setItem('blockchain height', requestedAtdHeight);
+				$status_nimiq_connection.removeClass("status-nimiq-connecting");
 				$status_text.default();
 			}
 		});
@@ -260,6 +261,7 @@ window.onload = function(e){
 
 	console.log("initialization");
 	$status_text.text("Initializing Nimiq blockchain node...");
+	$status_nimiq_connection.addClass("status-nimiq-connecting");
 
 	nimiq = new WalletNanoNetworkApi(true);
 }

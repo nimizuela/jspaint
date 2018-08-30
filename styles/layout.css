@@ -165,6 +165,8 @@ html, body, .jspaint {
 	flex-shrink: 0;
 	padding-right: 2px;
 	overflow: hidden;
+	padding-left: 3px;
+	border-left: 1px solid #7b7b7b;
 }
 .status-coordinates {
 	flex: 0 0 114px;
