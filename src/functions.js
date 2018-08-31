@@ -479,7 +479,9 @@ function paste(img){
 		// Note: relying on select_tool to call deselect();
 		select_tool(get_tool_by_name("Select"));
 
-		selection = new Selection(0, 0, img.width, img.height);
+		var offset = $canvas.position();
+
+		selection = new Selection(-offset.left / magnification, -offset.top / magnification, img.width, img.height);
 		selection.instantiate(img);
 	}
 }
