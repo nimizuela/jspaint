@@ -85,25 +85,29 @@ function manage_storage(){
 }
 
 function save_changes(){
-	localStorage.setItem(default_nimiq_address + '|rasterized image', bg_canvas.toDataURL("image/png"));
+	storage.set('image#' + address_hash, bg_canvas.toDataURL("image/png"));
 }
 
-function restore_canvas(){
+function restore_canvas(callback){
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	var dataURL = localStorage.getItem(default_nimiq_address + '|rasterized image');
-	if (dataURL){
-		var img = new Image();
-		img.src = dataURL;
-		img.onload = function (){
+	storage.get('image#' + address_hash, function(err, value) {
+		var restore = !err && value;
+		if (restore) {
+			var img = new Image();
+			img.src = value;
+			img.onload = function (){
+				bg_ctx.clearRect(0, 0, canvas.width, canvas.height);
+				//ctx.fillStyle = "white";
+				//ctx.fillRect(0, 0, canvas.width, canvas.height);
+				bg_ctx.drawImage(img, 0, 0);
+			};
+		} else {
 			bg_ctx.clearRect(0, 0, canvas.width, canvas.height);
-			//ctx.fillStyle = "white";
-			//ctx.fillRect(0, 0, canvas.width, canvas.height);
-			bg_ctx.drawImage(img, 0, 0);
-		};
-		return true;	
-	}
-	bg_ctx.clearRect(0, 0, canvas.width, canvas.height);
-	return false;
+		}
+		if (callback) {
+			callback(restore);
+		}
+	});
 }
 
 function get_chages(){

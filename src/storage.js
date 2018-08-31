@@ -66,12 +66,17 @@
           localStorage.setItem(key, JSON.stringify(value));
         } catch (_error) {
           err = _error;
-          err.quotaExceeded = err.code === 22 || err.name === "NS_ERROR_DOM_QUOTA_REACHED" || err.number === -2147024882;
-          callback(err);
+		  err.quotaExceeded = err.code === 22 || err.name === "NS_ERROR_DOM_QUOTA_REACHED" || err.number === -2147024882;
+          if (callback) {
+            callback(err);
+          }
           return;
         }
+	  }
+      if (callback) {
+        return callback(null);
       }
-      return callback(null);
+      return;
     }
   };
 
@@ -104,7 +109,10 @@
       }
       console.log('SET', to_set);
       return chrome.storage.local.set(to_set, function() {
-        return callback(chrome.runtime.lastError);
+        if (callback) {
+          return callback(chrome.runtime.lastError)
+		}
+        return;
       });
     }
   };

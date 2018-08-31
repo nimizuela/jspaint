@@ -133,9 +133,7 @@ $canvas.on("user-resized", function(e, _x, _y, width, height){
 		storage.set({
 			width: canvas.width,
 			height: canvas.height,
-		}, function(err){
-			// oh well
-		})
+		});
 	});
 });
 

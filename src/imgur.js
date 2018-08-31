@@ -145,7 +145,7 @@ function show_imgur_uploader(blob, pixels_count = 0, position_x = 0, position_y 
 						$nimiq_msg.select();
 					});
 
-					var nimiq_url = "https://safe.nimiq.com/#_request/" + default_nimiq_address.replace(/ /g, '-') + "/" + image_price(pixels_count) + "_"
+					var nimiq_url = "https://safe.nimiq.com/#_request/" + nimiq_address.replace(/ /g, '-') + "/" + image_price(pixels_count) + "_"
 					var $nimiq_url = $(E("a")).attr({id: "imgur-url", target: "_blank"});
 					$nimiq_url.text(nimiq_url);
 					$nimiq_url.attr('href', nimiq_url);
