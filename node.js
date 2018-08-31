@@ -278,7 +278,7 @@ window.onload = function(e){
 
 	var requested_address = get_param("address");
 	if (requested_address) {
-		nimiq_address = requested_address.replace(/[-_]/g, " ");
+		nimiq_address = requested_address.replace(/([-_ +]|%20)/g, '').replace(/(.{4})/g, '$1 ').trim();
 		address_hash = hash(nimiq_address);
 	}
 	console.log('showing Nimiq address: ' + nimiq_address);
