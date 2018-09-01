@@ -60,7 +60,7 @@ var menus = {
 		},
 		{
 			item: "Get Changes",
-			action: get_chages,
+			action: get_changes,
 			description: "Get the changes on the current image since the last call to Clear Changes.",
 		},
 		$MenuBar.DIVIDER,

@@ -110,7 +110,7 @@ function restore_canvas(callback){
 	});
 }
 
-function get_chages(){
+function get_changes(){
 	var bg_id = bg_ctx.getImageData(0, 0, canvas.width, canvas.height);
 	var sid = ctx.getImageData(0, 0, canvas.width, canvas.height);
 	var l = canvas.width;
