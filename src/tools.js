@@ -258,8 +258,20 @@ tools = [{
 			var r = id.data[0];
 			var g = id.data[1];
 			var b = id.data[2];
-			var a = id.data[3];
-			this.current_color = "rgba("+r+","+g+","+b+","+a/255+")";
+			var a = id.data[3]/255;
+
+			var bg_id = bg_ctx.getImageData(~~x, ~~y, 1, 1);
+			var bg_r = bg_id.data[0];
+			var bg_g = bg_id.data[1];
+			var bg_b = bg_id.data[2];
+			var bg_a = bg_id.data[3]/255;
+
+			var r = a * r + (1 - a) * (bg_a * bg_r + (1 - bg_a) * 255);
+			var g = a * g + (1 - a) * (bg_a * bg_g + (1 - bg_a) * 255);
+			var b = a * b + (1 - a) * (bg_a * bg_b + (1 - bg_a) * 255);
+			var a = 1;
+
+			this.current_color = "rgba("+r+","+g+","+b+","+a+")";
 		}else{
 			this.current_color = "white";
 		}
