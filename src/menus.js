@@ -410,7 +410,7 @@ var menus = {
 		},
 		$MenuBar.DIVIDER,
 		{
-			item: "&About Paint",
+			item: "&About Paynt",
 			action: show_about_paint,
 			description: "Displays information about this application.",
 			//description: "Displays program information, version number, and copyright.",

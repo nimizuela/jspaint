@@ -364,7 +364,7 @@ function show_about_paint(){
 	if($about_paint_window){
 		$about_paint_window.close();
 	}
-	$about_paint_window = $Window().title("About Paint");
+	$about_paint_window = $Window().title("About Paynt");
 	$about_paint_window.$content.append($about_paint_content.show()).css({padding: "15px"});
 	$about_paint_window.center();
 }
