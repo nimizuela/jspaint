@@ -41,9 +41,9 @@ function show_imgur_uploader(blob, pixels_count = 0, position_x = 0, position_y 
 		$imgur_window.center();
 	});
 
-	var $upload_button = $imgur_window.$Button("Upload", function(){
+	var $checkout_button = $imgur_window.$Button("Checkout", function(){
 
-		$upload_button.remove();
+		$checkout_button.remove();
 		$cancel_button.remove(); // TODO: allow canceling upload request
 
 		$imgur_window.width(300);
@@ -173,7 +173,7 @@ function show_imgur_uploader(blob, pixels_count = 0, position_x = 0, position_y 
 						req.setRequestHeader("Accept", "application/json");
 						req.send(null);
 	
-						$imgur_status.text("An error occurred: " + error.message + "Deleting...");
+						$imgur_status.text("An error occurred: " + error.message + " Deleting...");
 					});
 
 				} else {
