@@ -10,7 +10,6 @@ function show_imgur_uploader(blob, pixels_count = 0, position_x = 0, position_y 
 
 	var $preview_image_area = $(E("div")).appendTo($imgur_window.$main);//.html("<label style='display: block'>Preview:</label>");
 	var $nimiq_data = $(E("div")).addClass("imgur-data").appendTo($imgur_window.$main);
-	var $nimiq_url_area = $(E("div")).appendTo($imgur_window.$main);
 	var $imgur_url_area = $(E("div")).appendTo($imgur_window.$main);
 	var $imgur_status = $(E("div")).appendTo($imgur_window.$main);
 
@@ -44,8 +43,6 @@ function show_imgur_uploader(blob, pixels_count = 0, position_x = 0, position_y 
 
 	var $upload_button = $imgur_window.$Button("Upload", function(){
 
-		$preview_image_area.remove();
-		$nimiq_data.remove();
 		$upload_button.remove();
 		$cancel_button.remove(); // TODO: allow canceling upload request
 
@@ -132,45 +129,52 @@ function show_imgur_uploader(blob, pixels_count = 0, position_x = 0, position_y 
 
 				if (pixels_count > 0){
 					var nimiq_msg = ((position_x > 0 || position_y > 0) ? position_x + "," + position_y + "," : "") + response.data.id;
-					var $nimiq_msg = $(E("input")).css({
-						fontSize: "1em",
-						fontFamily: "Arial, sans-serif",
-						fontWeight: "bold",
-						textAlign: "center",
-						backgroundColor: "yellow"
-					});
-					$nimiq_msg.attr('readonly', true);
-					$nimiq_msg.val(nimiq_msg);
-					$nimiq_msg.click(function(){
-						$nimiq_msg.select();
-					});
 
-					var nimiq_url = "https://safe.nimiq.com/#_request/" + nimiq_address.replace(/ /g, '-') + "/" + image_price(pixels_count) + "_"
-					var $nimiq_url = $(E("a")).attr({id: "imgur-url", target: "_blank"});
-					$nimiq_url.text(nimiq_url);
-					$nimiq_url.attr('href', nimiq_url);
+					var hubApi = new HubApi('https://hub.nimiq.com');
 
-					var $copy_button = $(E("button")).text("<= Copy");
-					$copy_button.click(function(e){
-						e.preventDefault();
-						$nimiq_msg.select();
-						$nimiq_msg.focus();
-						document.execCommand("copy");
+					var options = {
+						appName: "Paynt Grafity Wall",
+						recipient: nimiq_address,
+						value: pixel_price * 1e5 * pixels_count,
+						fee: base_fee * 1e5 + nimiq_msg.length,
+						shopLogoUrl: location.origin + "/images/icons/128.png",
+						extraData: nimiq_msg
+					};
+
+					hubApi.checkout(options).then(function(signedTransaction) {
+						$imgur_status.text("Thank you for donating! Your transaction hash is <br>" + signedTransaction.hash);
+					}).catch(function(error){
+						$imgur_url_area.remove();
+						$imgur_window.center();
+	
+						var req = new XMLHttpRequest();
+	
+						req.addEventListener("readystatechange", function() {
+							$preview_image_area.remove();
+							$nimiq_data.remove();
+							
+							if(req.readyState == 4 && req.status == 200){
+								var response = parseImgurResponseJSON(req.responseText);
+								if(!response) return;
+	
+								if(response.success){
+									$imgur_status.text("Uploaded image deleted!");
+								}else{
+									$imgur_status.text("Failed to delete image :(");
+								}
+							}else if(req.readyState == 4){
+								$imgur_status.text("Error deleting image :(");
+							}
+						});
+	
+						req.open("DELETE", "https://api.imgur.com/3/image/" + response.data.deletehash, true);
+	
+						req.setRequestHeader("Authorization", "Client-ID 4d0d3274beac836");
+						req.setRequestHeader("Accept", "application/json");
+						req.send(null);
+	
+						$imgur_status.text("An error occurred: " + error.message + "Deleting...");
 					});
-
-					$nimiq_url_area.append(
-						"<label>Copy message for Nimiq transaction:</label>"
-					)
-					.append("<br>")
-					.append($nimiq_msg)
-					//.append("<br>")
-					.append($copy_button)
-					.append("<br>")
-					$nimiq_url_area.append(
-						"<label>then go to the safe to send transaction and paste the message by visiting:</label>"
-					)
-					.append("<br>")
-					.append($nimiq_url);
 
 				} else {
 					var $imgur_url = $(E("a")).attr({id: "imgur-url", target: "_blank"});
@@ -182,38 +186,6 @@ function show_imgur_uploader(blob, pixels_count = 0, position_x = 0, position_y 
 				}
 				$imgur_window.center();
 
-				var $delete_button = $imgur_window.$Button("Delete", function(){
-					$nimiq_url_area.remove();
-					$imgur_url_area.remove();
-					$imgur_window.center();
-
-					var req = new XMLHttpRequest();
-
-					req.addEventListener("readystatechange", function() {
-						if(req.readyState == 4 && req.status == 200){
-							$delete_button.remove();
-
-							var response = parseImgurResponseJSON(req.responseText);
-							if(!response) return;
-
-							if(response.success){
-								$imgur_status.text("Deleted successfully");
-							}else{
-								$imgur_status.text("Failed to delete image :(");
-							}
-						}else if(req.readyState == 4){
-							$imgur_status.text("Error deleting image :(");
-						}
-					});
-
-					req.open("DELETE", "https://api.imgur.com/3/image/" + response.data.deletehash, true);
-
-					req.setRequestHeader("Authorization", "Client-ID 4d0d3274beac836");
-					req.setRequestHeader("Accept", "application/json");
-					req.send(null);
-
-					$imgur_status.text("Deleting...");
-				});
 				var $okay_button = $imgur_window.$Button("OK", function(){
 					$imgur_window.close();
 				});

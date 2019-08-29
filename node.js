@@ -4,6 +4,7 @@ not_resizable_canvas = true;
 lock_color_mode = true;
 lock_transparency_mode = true;
 pixel_price = 0.01;
+base_fee = 0.0014;
 initial_blockchain_height = 0;
 
 class WalletNanoNetworkApi extends NanoNetworkApi {
