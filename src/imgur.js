@@ -142,7 +142,10 @@ function show_imgur_uploader(blob, pixels_count = 0, position_x = 0, position_y 
 					};
 
 					hubApi.checkout(options).then(function(signedTransaction) {
-						$imgur_status.text("Thank you for donating! Your transaction hash is <br>" + signedTransaction.hash);
+						$imgur_status.text("Thank you for donating! Your transaction hash is:");
+						$imgur_status.append("<br>");
+						$imgur_status.append(signedTransaction.hash);
+
 					}).catch(function(error){
 						$imgur_url_area.remove();
 						$imgur_window.center();
@@ -158,12 +161,12 @@ function show_imgur_uploader(blob, pixels_count = 0, position_x = 0, position_y 
 								if(!response) return;
 	
 								if(response.success){
-									$imgur_status.text("Uploaded image deleted!");
+									$imgur_status.append("Uploaded image deleted!");
 								}else{
-									$imgur_status.text("Failed to delete image :(");
+									$imgur_status.append("Failed to delete image :(");
 								}
 							}else if(req.readyState == 4){
-								$imgur_status.text("Error deleting image :(");
+								$imgur_status.append("Error deleting image :(");
 							}
 						});
 	
@@ -173,7 +176,17 @@ function show_imgur_uploader(blob, pixels_count = 0, position_x = 0, position_y 
 						req.setRequestHeader("Accept", "application/json");
 						req.send(null);
 	
-						$imgur_status.text("An error occurred: " + error.message + " Deleting...");
+						$imgur_status.text("An error occurred:");
+						$(E("pre"))
+						.appendTo($imgur_status)
+						.text(error.toString())
+						.css({
+							background: "white",
+							color: "#333",
+							fontFamily: "monospace",
+							width: "500px",
+							overflow: "auto",
+						});
 					});
 
 				} else {
