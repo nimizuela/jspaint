@@ -136,7 +136,7 @@ function show_imgur_uploader(blob, pixels_count = 0, position_x = 0, position_y 
 						appName: "Paynt Grafity Wall",
 						recipient: nimiq_address,
 						value: pixel_price * 1e5 * pixels_count,
-						fee: base_fee * 1e5 + nimiq_msg.length,
+						//fee: base_fee * 1e5 + nimiq_msg.length,
 						shopLogoUrl: location.origin + "/images/icons/128.png",
 						extraData: nimiq_msg
 					};
