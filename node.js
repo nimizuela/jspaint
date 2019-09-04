@@ -240,7 +240,7 @@ window.onload = function(e){
 		}
 	};
 	console = {};
-	console.log = console.warn = console.error = loggerFunction;
+	console.log = console.debug = console.warn = console.error = loggerFunction;
 
 	$textarea.on('scroll', function() {
 		if (($textarea.scrollTop() + $textarea.outerHeight()) > $textarea.prop('scrollHeight')) {
